@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="layout/main.html">
+<head>
+    <title>Home page</title>
+</head>
+
+    <div layout:fragment="headerNavbar" th:insert="~{navbar.html}">
+    </div>
+
+    <div layout:fragment="mainContainer">
+    <!--NEW FOLDER-->
+        <div class="col-12 mt-3">
+            <button type="button"
+                    class="btn btn-link text-decoration-none text-dark text-weight-bold"
+                    data-bs-toggle="modal"
+                    data-bs-target="#addNewFolder">
+                + New Folder
+            </button>
+
+            <div class="modal fade" id="addNewFolder"
+                 data-bs-backdrop="static"
+                 data-bs-keyboard="false"
+                 tabindex="-1"
+                 aria-labelledby="staticBackdropLabel"
+                 aria-hidden="true">
+                <form th:action="@{'/addFolder'}" method="post">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="staticBackdropLabel">Add New Folder</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <input type="hidden" name="folderId">
+                                <label for="folderName">Folder name:</label>
+                                <input type="text" id="folderName" name="folderName" placeholder="Home tasks" required>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                <button class="btn btn-primary">Add New Folder</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    <!--FOLDERS LIST-->
+        <!--DELETE FOLDER-->
+        <div class="col-12 mt-3" th:each="folder : ${folders}" style="padding: 10px; border: 1px solid #000000">
+            <form th:action="@{'/deleteFolder'}" method="post">
+                <input type="hidden" name="folderId" th:value="${folder.folderId}">
+                <h2 class="text-weight-bold" th:text="${folder.folderName}"></h2>
+                <a th:href="@{'/detailsFolder/' + ${folder.folderId}}" class="btn btn-primary mt-3" style="width: 100px;">Details</a>
+                <button type="button" class="btn btn-success mt-3" data-bs-toggle="modal"
+                        data-bs-target="#editFolderTitle">Edit Folder Title</button>
+                <button class="btn btn-danger mt-3">Delete Folder</button>
+            </form>
+        <!--EDIT FOLDER TITLE-->
+            <div class="modal fade" id="editFolderTitle"
+                 data-bs-backdrop="static"
+                 data-bs-keyboard="false"
+                 tabindex="-1"
+                 aria-labelledby="staticBackdropLabel"
+                 aria-hidden="true">
+                <form th:action="@{'/editFolderTitle'}" method="post">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Edit Folder Title</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <input type="hidden" name="folderId" th:value="${folder.folderId}">
+                                <label for="folderTitle">Folder title:</label>
+                                <input type="text" id="folderTitle" name="folderTitle" th:value="${folder.folderName}" required>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">CLOSE</button>
+                                <button class="btn btn-primary">EDIT FOLDER TITLE</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+
+    </div>
+
+</html>

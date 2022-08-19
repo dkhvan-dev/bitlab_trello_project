@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="layout/main.html">
+<head>
+    <title>Task page</title>
+</head>
+
+  <div layout:fragment="headerNavbar" th:insert="~{navbar.html}">
+  </div>
+
+  <div layout:fragment="mainContainer">
+  <!--UPDATE TASK BUTTON-->
+    <form class="mt-3" th:action="@{'/updateTask'}" method="post">
+      <input type="hidden" name="taskId" th:value="${task.taskId}">
+      <input type="hidden" name="folderId" th:value="${folder.folderId}">
+      <div class="mb-3">
+        <label for="taskTitle" class="form-label">Task title:</label>
+        <input type="text" class="form-control" id="taskTitle" name="taskTitle" th:value="${task.taskTitle}" th:readonly="${task.taskStatus.getTaskStatusId() == 4}">
+      </div>
+      <div class="mb-3">
+        <label for="taskDescription" class="form-label">Task description:</label>
+        <textarea class="form-control" id="taskDescription" name="taskDescription" th:text="${task.taskDescription}" th:readonly="${task.taskStatus.getTaskStatusId() == 4}"></textarea>
+      </div>
+      <div class="mb-3">
+        <label for="taskStatus">Task status:</label>
+        <select id="taskStatus" class="form-select" name="taskStatus">
+          <option th:each="taskStatus : ${allTaskStatus}"
+                  th:selected="${task.taskStatus.getTaskStatusId() == taskStatus.taskStatusId}"
+                  th:value="${task.taskStatus.getTaskStatusId() == taskStatus.taskStatusId} ? ${task.taskStatus.getTaskStatusId()} : ${taskStatus.taskStatusId}"
+                  th:text="${task.taskStatus.getTaskStatusId() == taskStatus.taskStatusId} ? ${task.taskStatus.getStatusName()} : ${taskStatus.statusName}"></option>
+        </select>
+      </div>
+      <button class="btn btn-success" th:if="${task.taskStatus.getTaskStatusId() != 4}">Update Task</button>
+      <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteTask">Delete Task</button>
+    </form>
+
+  <!--DELETE TASK BUTTON-->
+    <form th:action="@{'/deleteTask'}" method="post">
+      <input type="hidden" name="taskId" th:value="${task.taskId}">
+      <input type="hidden" name="folderId" th:value="${folder.folderId}">
+      <div class="modal fade" id="deleteTask" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Delete Task Window</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              Do you want to remove this task?
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">CLOSE</button>
+              <button class="btn btn-primary">REMOVE</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+
+  <!--COMMENTS-->
+    <div class="col-12 mt-3">
+      <div class="row mt-3" th:if="${task.taskStatus.getTaskStatusId() != 4}">
+        <button class="btn btn-link text-decoration-none text-dark text-weight-bold"
+                style="font-weight: bold;"
+                data-bs-toggle="modal" data-bs-target="#addComment">
+          + Add Comment
+        </button>
+
+        <form th:action="@{'/addComment'}" method="post">
+          <input type="hidden" name="folderId" th:value="${folder.folderId}">
+          <input type="hidden" name="taskId" th:value="${task.taskId}">
+          <div class="modal fade" id="addComment" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title">ADD NEW COMMENT</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  <div class="row mt-2">
+                    <label for="authorName" class="form-label">AUTHOR NAME:</label>
+                    <input type="text" id="authorName" name="commentAuthor" placeholder="Ilyas Zhuanyshev" required>
+                  </div>
+                  <div class="row mt-2">
+                    <label for="commentText" class="form-label">COMMENT TEXT:</label>
+                    <textarea id="commentText" name="comment" placeholder="I wanna go ..." required></textarea>
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">CLOSE</button>
+                  <button class="btn btn-primary">ADD</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <div class="col-6 mt-3">
+        <div class="col-12" th:each="comment : ${commentsByTaskId}" style="padding: 10px; border: 1px solid #6c6c6c; border-radius: 10px;">
+          <h5 style="font-weight: lighter;">Author: <span th:text="${comment.commentAuthor}" style="font-weight: bold;"></span></h5>
+          <p th:text="${comment.comment}"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</html>

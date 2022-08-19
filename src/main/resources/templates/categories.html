@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="layout/main.html">
+<head>
+    <title>Categories page</title>
+</head>
+
+    <div layout:fragment="headerNavbar" th:insert="~{navbar.html}">
+    </div>
+
+    <div layout:fragment="mainContainer">
+    <!--NEW CATEGORY BUTTON-->
+        <div class="col-12 mt-3">
+            <button type="button"
+                    class="btn btn-link text-decoration-none text-dark text-weight-bold"
+                    data-bs-toggle="modal"
+                    data-bs-target="#addToListCategory">
+                + New Category
+            </button>
+
+            <div class="modal fade" id="addToListCategory"
+                 data-bs-backdrop="static"
+                 data-bs-keyboard="false"
+                 tabindex="-1"
+                 aria-labelledby="staticBackdropLabel"
+                 aria-hidden="true">
+                <form th:action="@{'/addToListCategory'}" method="post">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="staticBackdropLabel">Add New Category To List</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <label for="newCategoryName">Category name:</label>
+                                <input type="text" id="newCategoryName" name="categoriesName" placeholder="Home tasks" required>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                <button class="btn btn-primary">ADD NEW CATEGORY</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    <!--CATEGORIES LIST-->
+        <div class="col-12 mt-3" th:each="category : ${allCategories}" style="padding: 10px; border: 1px solid #000000">
+            <form th:action="@{'/deleteFromListCategory'}" method="post">
+                <input type="hidden" name="categoriesId" th:value="${category.categoriesId}">
+                <h2 class="text-weight-bold" th:text="${category.categoriesName}"></h2>
+                <button type="button" class="btn btn-success mt-3" data-bs-toggle="modal"
+                        data-bs-target="#editCategory">Edit Category Name</button>
+                <button class="btn btn-danger mt-3">Delete Category</button>
+            </form>
+            <div class="modal fade" id="editCategory"
+                 data-bs-backdrop="static"
+                 data-bs-keyboard="false"
+                 tabindex="-1"
+                 aria-labelledby="staticBackdropLabel"
+                 aria-hidden="true">
+                <form th:action="@{'/editCategory'}" method="post">
+                    <input type="hidden" name="categoriesId" th:value="${category.categoriesId}">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Edit Category Name</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <label for="categoryName">Category name:</label>
+                                <input type="text" id="categoryName" name="categoriesName" th:value="${category.categoriesName}" required>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">CLOSE</button>
+                                <button class="btn btn-primary">EDIT CATEGORY NAME</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+
+    </div>
+
+</html>
