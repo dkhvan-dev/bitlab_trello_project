@@ -1,8 +1,10 @@
 package bitlab.springbootfirstfinal.services.impl;
 
+import bitlab.springbootfirstfinal.models.Comments;
 import bitlab.springbootfirstfinal.models.Folders;
 import bitlab.springbootfirstfinal.models.TaskStatus;
 import bitlab.springbootfirstfinal.models.Tasks;
+import bitlab.springbootfirstfinal.repository.CommentsRepository;
 import bitlab.springbootfirstfinal.repository.FoldersRepository;
 import bitlab.springbootfirstfinal.repository.TasksRepository;
 import bitlab.springbootfirstfinal.services.TaskService;
@@ -18,6 +20,9 @@ public class TasksServiceImpl implements TaskService {
 
     @Autowired
     FoldersRepository foldersRepository;
+
+    @Autowired
+    CommentsRepository commentsRepository;
 
     @Override
     public Tasks task(Long id) {
@@ -40,6 +45,8 @@ public class TasksServiceImpl implements TaskService {
 
     @Override
     public void deleteTask(Long id) {
+        List<Comments> comments = commentsRepository.searchAllByTask_TaskIdOrderByCommentsIdDesc(id);
+        commentsRepository.deleteAll(comments);
         tasksRepository.deleteById(id);
     }
 

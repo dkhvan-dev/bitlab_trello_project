@@ -1,7 +1,9 @@
 package bitlab.springbootfirstfinal.services.impl;
 
+import bitlab.springbootfirstfinal.models.Comments;
 import bitlab.springbootfirstfinal.models.Folders;
 import bitlab.springbootfirstfinal.models.Tasks;
+import bitlab.springbootfirstfinal.repository.CommentsRepository;
 import bitlab.springbootfirstfinal.repository.FoldersRepository;
 import bitlab.springbootfirstfinal.repository.TasksRepository;
 import bitlab.springbootfirstfinal.services.FoldersService;
@@ -19,6 +21,9 @@ public class FoldersServiceImpl implements FoldersService {
 
     @Autowired
     TasksRepository tasksRepository;
+
+    @Autowired
+    CommentsRepository commentsRepository;
 
     @Override
     public List<Folders> allFolders() {
@@ -41,6 +46,10 @@ public class FoldersServiceImpl implements FoldersService {
         if (folder != null) {
             folder.setCategories(new ArrayList<>());
             List<Tasks> tasks = tasksRepository.searchAllByFolder_FolderIdOrderByTaskId(folderId);
+            for (int i = 0; i < tasks.size(); i++) {
+                List<Comments> comments = commentsRepository.searchAllByTask_TaskIdOrderByCommentsIdDesc(tasks.get(i).getTaskId());
+                commentsRepository.deleteAll(comments);
+            }
             tasksRepository.deleteAll(tasks);
             foldersRepository.save(folder);
             foldersRepository.deleteById(folderId);

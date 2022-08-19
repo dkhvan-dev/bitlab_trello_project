@@ -16,22 +16,25 @@
       <input type="hidden" name="folderId" th:value="${folder.folderId}">
       <div class="mb-3">
         <label for="taskTitle" class="form-label">Task title:</label>
-        <input type="text" class="form-control" id="taskTitle" name="taskTitle" th:value="${task.taskTitle}" th:readonly="${task.taskStatus.getTaskStatusId() == 4}">
+        <input type="text" class="form-control" id="taskTitle" name="taskTitle" th:value="${task.taskTitle}" th:readonly="${!canUpdateTask}">
       </div>
       <div class="mb-3">
         <label for="taskDescription" class="form-label">Task description:</label>
-        <textarea class="form-control" id="taskDescription" name="taskDescription" th:text="${task.taskDescription}" th:readonly="${task.taskStatus.getTaskStatusId() == 4}"></textarea>
+        <textarea class="form-control" id="taskDescription" name="taskDescription" th:text="${task.taskDescription}" th:readonly="${!canUpdateTask}"></textarea>
       </div>
       <div class="mb-3">
         <label for="taskStatus">Task status:</label>
-        <select id="taskStatus" class="form-select" name="taskStatus">
+        <input class="form-control" type="text" id="taskStatus" th:if="${!canUpdateTask}" th:value="${task.taskStatus.statusName}" readonly>
+        <select id="taskStatus" class="form-select" name="taskStatus" th:if="${canUpdateTask}">
           <option th:each="taskStatus : ${allTaskStatus}"
                   th:selected="${task.taskStatus.getTaskStatusId() == taskStatus.taskStatusId}"
                   th:value="${task.taskStatus.getTaskStatusId() == taskStatus.taskStatusId} ? ${task.taskStatus.getTaskStatusId()} : ${taskStatus.taskStatusId}"
-                  th:text="${task.taskStatus.getTaskStatusId() == taskStatus.taskStatusId} ? ${task.taskStatus.getStatusName()} : ${taskStatus.statusName}"></option>
+                  th:text="${task.taskStatus.getTaskStatusId() == taskStatus.taskStatusId} ? ${task.taskStatus.getStatusName()} : ${taskStatus.statusName}">
+
+          </option>
         </select>
       </div>
-      <button class="btn btn-success" th:if="${task.taskStatus.getTaskStatusId() != 4}">Update Task</button>
+      <button class="btn btn-success" th:if="${canUpdateTask}">Update Task</button>
       <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteTask">Delete Task</button>
     </form>
 
@@ -39,7 +42,7 @@
     <form th:action="@{'/deleteTask'}" method="post">
       <input type="hidden" name="taskId" th:value="${task.taskId}">
       <input type="hidden" name="folderId" th:value="${folder.folderId}">
-      <div class="modal fade" id="deleteTask" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+      <div class="modal fade customModal" id="deleteTask" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
         <div class="modal-dialog">
           <div class="modal-content">
             <div class="modal-header">
@@ -60,7 +63,7 @@
 
   <!--COMMENTS-->
     <div class="col-12 mt-3">
-      <div class="row mt-3" th:if="${task.taskStatus.getTaskStatusId() != 4}">
+      <div class="row mt-3" th:if="${task.taskStatus.getTaskStatusId() != 3 && task.taskStatus.getTaskStatusId() != 4}">
         <button class="btn btn-link text-decoration-none text-dark text-weight-bold"
                 style="font-weight: bold;"
                 data-bs-toggle="modal" data-bs-target="#addComment">
@@ -70,7 +73,7 @@
         <form th:action="@{'/addComment'}" method="post">
           <input type="hidden" name="folderId" th:value="${folder.folderId}">
           <input type="hidden" name="taskId" th:value="${task.taskId}">
-          <div class="modal fade" id="addComment" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+          <div class="modal fade customModal" id="addComment" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
             <div class="modal-dialog">
               <div class="modal-content">
                 <div class="modal-header">

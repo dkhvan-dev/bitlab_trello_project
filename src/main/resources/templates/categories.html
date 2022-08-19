@@ -19,7 +19,7 @@
                 + New Category
             </button>
 
-            <div class="modal fade" id="addToListCategory"
+            <div class="modal fade customModal" id="addToListCategory"
                  data-bs-backdrop="static"
                  data-bs-keyboard="false"
                  tabindex="-1"
@@ -47,7 +47,7 @@
         </div>
 
     <!--CATEGORIES LIST-->
-        <div class="col-12 mt-3" th:each="category : ${allCategories}" style="padding: 10px; border: 1px solid #000000">
+        <div class="col-12 mt-3 folderAndCategoriesList" th:each="category : ${allCategories}">
             <form th:action="@{'/deleteFromListCategory'}" method="post">
                 <input type="hidden" name="categoriesId" th:value="${category.categoriesId}">
                 <h2 class="text-weight-bold" th:text="${category.categoriesName}"></h2>
@@ -55,7 +55,7 @@
                         data-bs-target="#editCategory">Edit Category Name</button>
                 <button class="btn btn-danger mt-3">Delete Category</button>
             </form>
-            <div class="modal fade" id="editCategory"
+            <div class="modal fade customModal" id="editCategory"
                  data-bs-backdrop="static"
                  data-bs-keyboard="false"
                  tabindex="-1"

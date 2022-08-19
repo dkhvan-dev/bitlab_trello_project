@@ -76,6 +76,14 @@ public class MainController {
         model.addAttribute("commentsByTaskId", commentsByTaskId);
         List<TaskStatus> allTaskStatus = taskStatusService.allTaskStatus();
         model.addAttribute("allTaskStatus", allTaskStatus);
+
+        boolean canUpdateTask = true;
+        if (task.getTaskStatus().getTaskStatusId() > 2) {
+            canUpdateTask = false;
+        } else {
+            canUpdateTask = true;
+        }
+        model.addAttribute("canUpdateTask", canUpdateTask);
         return "detailsTask";
     }
 

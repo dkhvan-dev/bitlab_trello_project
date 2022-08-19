@@ -11,11 +11,11 @@
 
     <!--FOLDER CATEGORIES-->
     <div layout:fragment="mainContainer">
-        <div class="col-12 mt-3" style="padding: 10px; border: 1px solid #000000">
+        <div class="col-12 mt-3 folderAndCategoriesList">
             <h2 class="text-weight-bold" th:text="${folder.folderName}"></h2>
             <div  class="d-flex">
                 <div th:each="category : ${taskCategories}">
-                    <div class="bg-primary" style="padding: 0 10px 0 10px; border-radius: 10px; color: #ffffff;">
+                    <div class="bg-primary" style="margin-right: 10px; padding: 0 10px 0 10px; border-radius: 10px; color: #ffffff;">
                         <span th:text="${category.categoriesName}" style="font-size: 10px; font-weight: bold; margin-right: 10px;"></span>
                         <button type="button" class="btn btn-primary" data-bs-toggle="modal"
                                 th:data-bs-target="'#categoryNumber' + ${category.categoriesId}"
@@ -28,7 +28,7 @@
                     <form th:action="@{'/deleteCategory'}" method="post">
                         <input type="hidden" name="folderId" th:value="${folder.folderId}">
                         <input type="hidden" name="categoriesId" th:value="${category.categoriesId}">
-                        <div class="modal fade" th:id="'categoryNumber' + ${category.categoriesId}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                        <div class="modal fade customModal" th:id="'categoryNumber' + ${category.categoriesId}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
                             <div class="modal-dialog">
                                 <div class="modal-content">
                                     <div class="modal-header">
@@ -59,7 +59,7 @@
 
             <form th:action="@{'/addCategory'}" method="post">
                 <input type="hidden" name="folderId" th:value="${folder.folderId}">
-                <div class="modal fade" id="addCategory" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                <div class="modal fade customModal" id="addCategory" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header">
@@ -94,7 +94,7 @@
 
             <form th:action="@{'/addTask'}" method="post">
                 <input type="hidden" name="folderId" th:value="${folder.folderId}">
-                <div class="modal fade" id="addNewTask"
+                <div class="modal fade customModal" id="addNewTask"
                      data-bs-backdrop="static"
                      data-bs-keyboard="false"
                      tabindex="-1"
@@ -147,7 +147,7 @@
                               th:style="${'color: ' + task.taskStatus.getStatusColor() + '; font-weight: bold;'}"></span>
                     </td>
                     <td>
-                        <a th:href="@{'/detailsTask/' + ${folder.folderId} + '/' + ${task.taskId}}" class="btn btn-primary">View More</a>
+                        <a th:href="@{'/detailsTask/' + ${folder.folderId} + '/' + ${task.taskId}}" class="btn btn-primary btn-antifocus rotate-vert-center">View More</a>
                     </td>
                 </tr>
                 </tbody>
