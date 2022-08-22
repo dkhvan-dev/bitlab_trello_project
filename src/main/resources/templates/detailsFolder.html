@@ -32,15 +32,14 @@
                             <div class="modal-dialog">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <h5 class="modal-title">REMOVE CATEGORY</h5>
+                                        <h5 class="modal-title" th:text="#{deleteCategoryBtn}"></h5>
                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                     </div>
-                                    <div class="modal-body">
-                                        Do you want to remove this category?
+                                    <div class="modal-body" th:text="#{doYouWantRemoveCategory}">
                                     </div>
                                     <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">CLOSE</button>
-                                        <button class="btn btn-danger">REMOVE</button>
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" th:text="#{closeBtn}"></button>
+                                        <button class="btn btn-danger" th:text="#{deleteCategoryBtn}"></button>
                                     </div>
                                 </div>
                             </div>
@@ -53,8 +52,7 @@
             <button class="btn btn-link text-decoration-none text-dark text-weight-bold"
                     style="font-weight: bold;"
                     data-bs-toggle="modal" data-bs-target="#addCategory"
-                    th:if="${!allCategories.isEmpty()}">
-                + Add Category
+                    th:if="${!allCategories.isEmpty()}" th:text="'+ ' + #{addCategoryToFolderAndBtn}">
             </button>
 
             <form th:action="@{'/addCategory'}" method="post">
@@ -63,18 +61,18 @@
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title">ASSIGN CATEGORY</h5>
+                                <h5 class="modal-title" th:text="#{assignCategory}"></h5>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
-                                <label for="categorySelect" class="form-label">CATEGORY NAME:</label>
+                                <label for="categorySelect" class="form-label" th:text="#{categoryName} + ':'"></label>
                                 <select id="categorySelect" name="categoriesId">
                                     <option th:each="category : ${allCategories}" th:text="${category.categoriesName}" th:value="${category.categoriesId}"></option>
                                 </select>
                             </div>
                             <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">CLOSE</button>
-                                <button class="btn btn-primary">ADD</button>
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" th:text="#{closeBtn}"></button>
+                                <button class="btn btn-primary" th:text="#{addCategoryToFolderAndBtn}"></button>
                             </div>
                         </div>
                     </div>
@@ -88,8 +86,7 @@
                     class="btn btn-link text-decoration-none text-dark text-weight-bold"
                     data-bs-toggle="modal"
                     data-bs-target="#addNewTask"
-                    style="font-weight: bold;">
-                + New Task
+                    style="font-weight: bold;" th:text="'+ ' + #{newTask}">
             </button>
 
             <form th:action="@{'/addTask'}" method="post">
@@ -103,23 +100,23 @@
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title">ADD TASK</h5>
+                                <h5 class="modal-title" th:text="#{addTask}"></h5>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
                                 <div class="mb-3">
-                                    <label for="newTaskTitle" class="form-label">TITLE:</label>
+                                    <label for="newTaskTitle" class="form-label" th:text="#{addTaskName} + ':'"></label>
                                     <input type="text" class="form-control" id="newTaskTitle" placeholder="Title" name="taskTitle">
                                 </div>
                                 <div class="mb-3">
-                                    <label for="newTaskDescription" class="form-label">DESCRIPTION:</label>
+                                    <label for="newTaskDescription" class="form-label" th:text="#{addTaskDescription} + ':'"></label>
                                     <textarea class="form-control" id="newTaskDescription" placeholder="Description" name="taskDescription"></textarea>
                                 </div>
                                 <input type="hidden" name="taskStatusId" th:value="${taskStatusList.get(0).taskStatusId}">
                             </div>
                             <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">CLOSE</button>
-                                <button class="btn btn-success">ADD</button>
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" th:text="#{closeBtn}"></button>
+                                <button class="btn btn-success" th:text="#{addTask}"></button>
                             </div>
                         </div>
                     </div>
@@ -133,9 +130,9 @@
                 <thead>
                 <tr>
                     <th scope="col">ID</th>
-                    <th scope="col">Task Name</th>
-                    <th scope="col">Status</th>
-                    <th scope="col">Details</th>
+                    <th scope="col" th:text="#{taskName}"></th>
+                    <th scope="col" th:text="#{status}"></th>
+                    <th scope="col" th:text="#{detailsTitle}"></th>
                 </tr>
                 </thead>
                 <tbody>
@@ -147,7 +144,7 @@
                               th:style="${'color: ' + task.taskStatus.getStatusColor() + '; font-weight: bold;'}"></span>
                     </td>
                     <td>
-                        <a th:href="@{'/detailsTask/' + ${folder.folderId} + '/' + ${task.taskId}}" class="btn btn-primary btn-antifocus rotate-vert-center">View More</a>
+                        <a th:href="@{'/detailsTask/' + ${folder.folderId} + '/' + ${task.taskId}}" class="btn btn-primary btn-antifocus rotate-vert-center" th:text="#{viewMore}"></a>
                     </td>
                 </tr>
                 </tbody>

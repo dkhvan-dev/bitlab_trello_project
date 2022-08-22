@@ -15,8 +15,7 @@
             <button type="button"
                     class="btn btn-link text-decoration-none text-dark text-weight-bold"
                     data-bs-toggle="modal"
-                    data-bs-target="#addToListCategory">
-                + New Category
+                    data-bs-target="#addToListCategory" th:text="'+ ' + #{addNewCategory}">
             </button>
 
             <div class="modal fade customModal" id="addToListCategory"
@@ -29,16 +28,16 @@
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title" id="staticBackdropLabel">Add New Category To List</h5>
+                                <h5 class="modal-title" id="staticBackdropLabel" th:text="#{addNewCategoryModalTitle}"></h5>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
-                                <label for="newCategoryName">Category name:</label>
+                                <label for="newCategoryName" th:text="#{categoryName} + ':'"></label>
                                 <input type="text" id="newCategoryName" name="categoriesName" placeholder="Home tasks" required>
                             </div>
                             <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                                <button class="btn btn-primary">ADD NEW CATEGORY</button>
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" th:text="#{closeBtn}"></button>
+                                <button class="btn btn-primary" th:text="#{addCategoryToFolderAndBtn}"></button>
                             </div>
                         </div>
                     </div>
@@ -52,8 +51,8 @@
                 <input type="hidden" name="categoriesId" th:value="${category.categoriesId}">
                 <h2 class="text-weight-bold" th:text="${category.categoriesName}"></h2>
                 <button type="button" class="btn btn-success mt-3" data-bs-toggle="modal"
-                        data-bs-target="#editCategory">Edit Category Name</button>
-                <button class="btn btn-danger mt-3">Delete Category</button>
+                        data-bs-target="#editCategory" th:text="#{editCategoryBtnAndModal}"></button>
+                <button class="btn btn-danger mt-3" th:text="#{deleteCategoryBtn}"></button>
             </form>
             <div class="modal fade customModal" id="editCategory"
                  data-bs-backdrop="static"
@@ -66,16 +65,16 @@
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title">Edit Category Name</h5>
+                                <h5 class="modal-title" th:text="#{editCategoryBtnAndModal}"></h5>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
-                                <label for="categoryName">Category name:</label>
+                                <label for="categoryName" th:text="#{categoryName} + ':'"></label>
                                 <input type="text" id="categoryName" name="categoriesName" th:value="${category.categoriesName}" required>
                             </div>
                             <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">CLOSE</button>
-                                <button class="btn btn-primary">EDIT CATEGORY NAME</button>
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" th:text="#{closeBtn}"></button>
+                                <button class="btn btn-primary" th:text="#{editCategoryBtnAndModal}"></button>
                             </div>
                         </div>
                     </div>

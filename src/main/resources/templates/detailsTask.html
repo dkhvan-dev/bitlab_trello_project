@@ -15,15 +15,15 @@
       <input type="hidden" name="taskId" th:value="${task.taskId}">
       <input type="hidden" name="folderId" th:value="${folder.folderId}">
       <div class="mb-3">
-        <label for="taskTitle" class="form-label">Task title:</label>
+        <label for="taskTitle" class="form-label" th:text="#{detailsTaskTitle} + ':'"></label>
         <input type="text" class="form-control" id="taskTitle" name="taskTitle" th:value="${task.taskTitle}" th:readonly="${!canUpdateTask}">
       </div>
       <div class="mb-3">
-        <label for="taskDescription" class="form-label">Task description:</label>
+        <label for="taskDescription" class="form-label" th:text="#{detailsTaskDescription} + ':'"></label>
         <textarea class="form-control" id="taskDescription" name="taskDescription" th:text="${task.taskDescription}" th:readonly="${!canUpdateTask}"></textarea>
       </div>
       <div class="mb-3">
-        <label for="taskStatus">Task status:</label>
+        <label for="taskStatus" th:text="#{detailsTaskStatus} + ':'"></label>
         <input class="form-control" type="text" id="taskStatus" th:if="${!canUpdateTask}" th:value="${task.taskStatus.statusName}" readonly>
         <select id="taskStatus" class="form-select" name="taskStatus" th:if="${canUpdateTask}">
           <option th:each="taskStatus : ${allTaskStatus}"
@@ -34,8 +34,8 @@
           </option>
         </select>
       </div>
-      <button class="btn btn-success" th:if="${canUpdateTask}">Update Task</button>
-      <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteTask">Delete Task</button>
+      <button class="btn btn-success" th:if="${canUpdateTask}" th:text="#{updateTaskBtn}"></button>
+      <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteTask" th:text="#{deleteTaskBtn}"></button>
     </form>
 
   <!--DELETE TASK BUTTON-->
@@ -46,15 +46,14 @@
         <div class="modal-dialog">
           <div class="modal-content">
             <div class="modal-header">
-              <h5 class="modal-title">Delete Task Window</h5>
+              <h5 class="modal-title" th:text="#{deleteTaskBtn}"></h5>
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body">
-              Do you want to remove this task?
+            <div class="modal-body" th:text="#{doYouWantRemoveTask}">
             </div>
             <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">CLOSE</button>
-              <button class="btn btn-primary">REMOVE</button>
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" th:text="#{closeBtn}"></button>
+              <button class="btn btn-primary" th:text="#{deleteTaskBtn}"></button>
             </div>
           </div>
         </div>
@@ -66,8 +65,7 @@
       <div class="row mt-3" th:if="${task.taskStatus.getTaskStatusId() != 3 && task.taskStatus.getTaskStatusId() != 4}">
         <button class="btn btn-link text-decoration-none text-dark text-weight-bold"
                 style="font-weight: bold;"
-                data-bs-toggle="modal" data-bs-target="#addComment">
-          + Add Comment
+                data-bs-toggle="modal" data-bs-target="#addComment" th:text="'+ ' + #{addNewComment}">
         </button>
 
         <form th:action="@{'/addComment'}" method="post">
@@ -77,22 +75,22 @@
             <div class="modal-dialog">
               <div class="modal-content">
                 <div class="modal-header">
-                  <h5 class="modal-title">ADD NEW COMMENT</h5>
+                  <h5 class="modal-title" th:text="#{addNewComment}"></h5>
                   <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                   <div class="row mt-2">
-                    <label for="authorName" class="form-label">AUTHOR NAME:</label>
+                    <label for="authorName" class="form-label" th:text="#{authorName} + ':'"></label>
                     <input type="text" id="authorName" name="commentAuthor" placeholder="Ilyas Zhuanyshev" required>
                   </div>
                   <div class="row mt-2">
-                    <label for="commentText" class="form-label">COMMENT TEXT:</label>
+                    <label for="commentText" class="form-label" th:text="#{commentText} + ':'"></label>
                     <textarea id="commentText" name="comment" placeholder="I wanna go ..." required></textarea>
                   </div>
                 </div>
                 <div class="modal-footer">
-                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">CLOSE</button>
-                  <button class="btn btn-primary">ADD</button>
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" th:text="#{closeBtn}"></button>
+                  <button class="btn btn-primary" th:text="#{addNewComment}"></button>
                 </div>
               </div>
             </div>
@@ -102,7 +100,7 @@
 
       <div class="col-6 mt-3">
         <div class="col-12" th:each="comment : ${commentsByTaskId}" style="padding: 10px; border: 1px solid #6c6c6c; border-radius: 10px;">
-          <h5 style="font-weight: lighter;">Author: <span th:text="${comment.commentAuthor}" style="font-weight: bold;"></span></h5>
+          <h5><span style="font-weight: lighter;" th:text="#{authorAddedComment} + ': '"></span><span th:text="${comment.commentAuthor}" style="font-weight: bold;"></span></h5>
           <p th:text="${comment.comment}"></p>
         </div>
       </div>

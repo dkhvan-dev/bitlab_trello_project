@@ -15,8 +15,7 @@
             <button type="button"
                     class="btn btn-link text-decoration-none text-dark text-weight-bold btn-antifocus"
                     data-bs-toggle="modal"
-                    data-bs-target="#addNewFolder">
-                + New Folder
+                    data-bs-target="#addNewFolder" th:text="'+ ' + #{newFolder}">
             </button>
 
             <div class="modal fade customModal" id="addNewFolder"
@@ -29,17 +28,17 @@
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title" id="staticBackdropLabel">Add New Folder</h5>
+                                <h5 class="modal-title" id="staticBackdropLabel" th:text="#{addNewFolder}"></h5>
                                 <button type="button" class="btn-close btn-antifocus" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
                                 <input type="hidden" name="folderId">
-                                <label for="folderName">Folder name:</label>
+                                <label for="folderName" th:text="#{folderName} + ':'"></label>
                                 <input type="text" id="folderName" name="folderName" placeholder="Home tasks" required>
                             </div>
                             <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary btn-antifocus" data-bs-dismiss="modal">Cancel</button>
-                                <button class="btn btn-primary btn-antifocus">Add New Folder</button>
+                                <button type="button" class="btn btn-secondary btn-antifocus" data-bs-dismiss="modal" th:text="#{closeBtn}"></button>
+                                <button class="btn btn-primary btn-antifocus" th:text="#{addNewFolder}"></button>
                             </div>
                         </div>
                     </div>
@@ -53,13 +52,13 @@
             <form th:action="@{'/deleteFolder'}" method="post">
                 <input type="hidden" name="folderId" th:value="${folder.folderId}">
                 <h2 class="text-weight-bold" th:text="${folder.folderName}"></h2>
-                <a th:href="@{'/detailsFolder/' + ${folder.folderId}}" class="btn btn-primary mt-3 shadow-drop-br" style="width: 100px;">Details</a>
+                <a th:href="@{'/detailsFolder/' + ${folder.folderId}}" class="btn btn-primary mt-3 shadow-drop-br" style="width: 100px;" th:text="#{detailsBtn}"></a>
                 <button type="button" class="btn btn-success mt-3 btn-antifocus shadow-drop-br" data-bs-toggle="modal"
-                        data-bs-target="#editFolderTitle">Edit Folder Title</button>
-                <button class="btn btn-danger mt-3 btn-antifocus shadow-drop-br">Delete Folder</button>
+                        th:data-bs-target="'#editFolderTitle' + ${folder.folderId}" th:text="#{editCategoryBtnAndModal}"></button>
+                <button class="btn btn-danger mt-3 btn-antifocus shadow-drop-br" th:text="#{deleteFolderBtn}"></button>
             </form>
         <!--EDIT FOLDER TITLE-->
-            <div class="modal fade customModal" id="editFolderTitle"
+            <div class="modal fade customModal" th:id="'editFolderTitle' + ${folder.folderId}"
                  data-bs-backdrop="static"
                  data-bs-keyboard="false"
                  tabindex="-1"
@@ -69,17 +68,17 @@
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title">Edit Folder Title</h5>
+                                <h5 class="modal-title" th:text="#{editFolderBtn}"></h5>
                                 <button type="button" class="btn-close btn-antifocus" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
                                 <input type="hidden" name="folderId" th:value="${folder.folderId}">
-                                <label for="folderTitle">Folder title:</label>
+                                <label for="folderTitle" th:text="#{folderName} + ':'"></label>
                                 <input type="text" id="folderTitle" name="folderTitle" th:value="${folder.folderName}" required>
                             </div>
                             <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary btn-antifocus" data-bs-dismiss="modal">CLOSE</button>
-                                <button class="btn btn-primary btn-antifocus">EDIT FOLDER TITLE</button>
+                                <button type="button" class="btn btn-secondary btn-antifocus" data-bs-dismiss="modal" th:text="#{closeBtn}"></button>
+                                <button class="btn btn-primary btn-antifocus" th:text="#{editFolderBtn}"></button>
                             </div>
                         </div>
                     </div>
