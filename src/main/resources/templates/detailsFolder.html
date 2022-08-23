@@ -19,7 +19,7 @@
                         <span th:text="${category.categoriesName}" style="font-size: 10px; font-weight: bold; margin-right: 10px;"></span>
                         <button type="button" class="btn btn-primary" data-bs-toggle="modal"
                                 th:data-bs-target="'#categoryNumber' + ${category.categoriesId}"
-                                style="padding: 0;"
+                                style="padding: 0;" sec:authorize="hasAnyRole('ROLE_EDITOR')"
                         >
                             x
                         </button>
@@ -38,8 +38,11 @@
                                     <div class="modal-body" th:text="#{doYouWantRemoveCategory}">
                                     </div>
                                     <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" th:text="#{closeBtn}"></button>
-                                        <button class="btn btn-danger" th:text="#{deleteCategoryBtn}"></button>
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+                                                th:text="#{closeBtn}"
+                                                sec:authorize="hasAnyRole('ROLE_EDITOR')"></button>
+                                        <button class="btn btn-danger" th:text="#{deleteCategoryBtn}"
+                                                sec:authorize="hasAnyRole('ROLE_EDITOR')"></button>
                                     </div>
                                 </div>
                             </div>
@@ -52,7 +55,9 @@
             <button class="btn btn-link text-decoration-none text-dark text-weight-bold"
                     style="font-weight: bold;"
                     data-bs-toggle="modal" data-bs-target="#addCategory"
-                    th:if="${!allCategories.isEmpty()}" th:text="'+ ' + #{addCategoryToFolderAndBtn}">
+                    th:if="${!allCategories.isEmpty()}"
+                    th:text="'+ ' + #{addCategoryToFolder}"
+                    sec:authorize="hasAnyRole('ROLE_EDITOR')">
             </button>
 
             <form th:action="@{'/addCategory'}" method="post">
@@ -72,7 +77,7 @@
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" th:text="#{closeBtn}"></button>
-                                <button class="btn btn-primary" th:text="#{addCategoryToFolderAndBtn}"></button>
+                                <button class="btn btn-primary" th:text="#{addCategoryToFolderModal}"></button>
                             </div>
                         </div>
                     </div>
@@ -86,7 +91,9 @@
                     class="btn btn-link text-decoration-none text-dark text-weight-bold"
                     data-bs-toggle="modal"
                     data-bs-target="#addNewTask"
-                    style="font-weight: bold;" th:text="'+ ' + #{newTask}">
+                    style="font-weight: bold;"
+                    th:text="'+ ' + #{newTask}"
+                    sec:authorize="hasAnyRole('ROLE_EDITOR')">
             </button>
 
             <form th:action="@{'/addTask'}" method="post">

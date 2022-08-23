@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="layout/main.html">
+<head>
+    <title>Home page</title>
+</head>
+
+    <div layout:fragment="headerNavbar" th:insert="~{navbar.html}">
+    </div>
+
+    <div layout:fragment="mainContainer">
+        <div class="alert alert-danger" role="alert" th:if="${param.errorPassword != null}">
+            Passwords are not same!
+        </div>
+        <div class="alert alert-danger" role="alert" th:if="${param.errorUnknown != null}">
+            Unknown failed!
+        </div>
+        <div class="alert alert-success" role="alert" th:if="${param.success != null}">
+            New user added successfully!
+        </div>
+        <form class="form-control" th:action="@{'/signUp'}" method="post">
+            <label>
+                <span th:text="#{signInUpEmail} + ':'"></span>
+                <input class="form-control" type="email" name="user_email">
+            </label>
+            <label>
+                <span th:text="#{signInUpPassword} + ':'"></span>
+                <input class="form-control" type="password" name="user_password">
+            </label>
+            <label>
+                <span th:text="#{signUpRepassword} + ':'"></span>
+                <input class="form-control" type="password" name="user_re_password">
+            </label>
+            <label>
+                <span th:text="#{signUpFullname} + ':'"></span>
+                <input class="form-control" type="text" name="user_full_name">
+            </label>
+            <button class="btn btn-primary" th:text="#{signUpLink}"></button>
+        </form>
+    </div>
+
+</html>

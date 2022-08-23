@@ -15,7 +15,9 @@
             <button type="button"
                     class="btn btn-link text-decoration-none text-dark text-weight-bold btn-antifocus"
                     data-bs-toggle="modal"
-                    data-bs-target="#addNewFolder" th:text="'+ ' + #{newFolder}">
+                    data-bs-target="#addNewFolder"
+                    th:text="'+ ' + #{newFolder}"
+                    sec:authorize="hasAnyRole('ROLE_EDITOR')">
             </button>
 
             <div class="modal fade customModal" id="addNewFolder"
@@ -48,15 +50,19 @@
 
     <!--FOLDERS LIST-->
         <!--DELETE FOLDER-->
-        <div class="col-12 mt-3 folderAndCategoriesList" th:each="folder : ${folders}">
-            <form th:action="@{'/deleteFolder'}" method="post">
+        <form th:action="@{'/deleteFolder'}" method="post">
+            <div class="col-12 mt-3 folderAndCategoriesList" th:each="folder : ${folders}">
                 <input type="hidden" name="folderId" th:value="${folder.folderId}">
                 <h2 class="text-weight-bold" th:text="${folder.folderName}"></h2>
                 <a th:href="@{'/detailsFolder/' + ${folder.folderId}}" class="btn btn-primary mt-3 shadow-drop-br" style="width: 100px;" th:text="#{detailsBtn}"></a>
                 <button type="button" class="btn btn-success mt-3 btn-antifocus shadow-drop-br" data-bs-toggle="modal"
-                        th:data-bs-target="'#editFolderTitle' + ${folder.folderId}" th:text="#{editCategoryBtnAndModal}"></button>
-                <button class="btn btn-danger mt-3 btn-antifocus shadow-drop-br" th:text="#{deleteFolderBtn}"></button>
-            </form>
+                        th:data-bs-target="'#editFolderTitle' + ${folder.folderId}"
+                        th:text="#{editCategoryBtnAndModal}"
+                        sec:authorize="hasAnyRole('ROLE_EDITOR')"></button>
+                <button class="btn btn-danger mt-3 btn-antifocus shadow-drop-br"
+                        th:text="#{deleteFolderBtn}"
+                        sec:authorize="hasAnyRole('ROLE_EDITOR')"></button>
+        </form>
         <!--EDIT FOLDER TITLE-->
             <div class="modal fade customModal" th:id="'editFolderTitle' + ${folder.folderId}"
                  data-bs-backdrop="static"

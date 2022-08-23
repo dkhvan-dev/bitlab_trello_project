@@ -15,7 +15,9 @@
             <button type="button"
                     class="btn btn-link text-decoration-none text-dark text-weight-bold"
                     data-bs-toggle="modal"
-                    data-bs-target="#addToListCategory" th:text="'+ ' + #{addNewCategory}">
+                    data-bs-target="#addToListCategory"
+                    th:text="'+ ' + #{addNewCategory}"
+                    sec:authorize="hasAnyRole('ROLE_EDITOR')">
             </button>
 
             <div class="modal fade customModal" id="addToListCategory"
@@ -37,7 +39,7 @@
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" th:text="#{closeBtn}"></button>
-                                <button class="btn btn-primary" th:text="#{addCategoryToFolderAndBtn}"></button>
+                                <button class="btn btn-primary" th:text="#{addCategoryToFolderModal}"></button>
                             </div>
                         </div>
                     </div>
@@ -51,10 +53,14 @@
                 <input type="hidden" name="categoriesId" th:value="${category.categoriesId}">
                 <h2 class="text-weight-bold" th:text="${category.categoriesName}"></h2>
                 <button type="button" class="btn btn-success mt-3" data-bs-toggle="modal"
-                        data-bs-target="#editCategory" th:text="#{editCategoryBtnAndModal}"></button>
-                <button class="btn btn-danger mt-3" th:text="#{deleteCategoryBtn}"></button>
+                        th:data-bs-target="'#editCategory' + ${category.categoriesId}"
+                        th:text="#{editCategoryBtnAndModal}"
+                        sec:authorize="hasAnyRole('ROLE_EDITOR')"></button>
+                <button class="btn btn-danger mt-3"
+                        th:text="#{deleteCategoryBtn}"
+                        sec:authorize="hasAnyRole('ROLE_EDITOR')"></button>
             </form>
-            <div class="modal fade customModal" id="editCategory"
+            <div class="modal fade customModal" th:id="'editCategory' + ${category.categoriesId}"
                  data-bs-backdrop="static"
                  data-bs-keyboard="false"
                  tabindex="-1"

@@ -2,6 +2,7 @@ package bitlab.springbootfirstfinal.services.impl;
 
 import bitlab.springbootfirstfinal.models.Comments;
 import bitlab.springbootfirstfinal.models.Tasks;
+import bitlab.springbootfirstfinal.models.User;
 import bitlab.springbootfirstfinal.repository.CommentsRepository;
 import bitlab.springbootfirstfinal.repository.TasksRepository;
 import bitlab.springbootfirstfinal.services.CommentsService;
@@ -25,10 +26,11 @@ public class CommentsServiceImpl implements CommentsService {
     }
 
     @Override
-    public void addComment(Comments comment, Long taskId) {
+    public void addComment(Comments comment, Long taskId, User currentUser) {
         Tasks task = tasksRepository.findById(taskId).orElse(null);
         if (comment != null) {
             comment.setTask(task);
+            comment.setCommentAuthor(currentUser.getFullName());
             commentsRepository.save(comment);
         }
     }

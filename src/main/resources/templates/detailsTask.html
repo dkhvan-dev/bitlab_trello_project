@@ -16,26 +16,37 @@
       <input type="hidden" name="folderId" th:value="${folder.folderId}">
       <div class="mb-3">
         <label for="taskTitle" class="form-label" th:text="#{detailsTaskTitle} + ':'"></label>
-        <input type="text" class="form-control" id="taskTitle" name="taskTitle" th:value="${task.taskTitle}" th:readonly="${!canUpdateTask}">
+        <input type="text" class="form-control" id="taskTitle" name="taskTitle" th:value="${task.taskTitle}" th:readonly="${!canUpdateTask || currentUser == null}">
       </div>
       <div class="mb-3">
         <label for="taskDescription" class="form-label" th:text="#{detailsTaskDescription} + ':'"></label>
-        <textarea class="form-control" id="taskDescription" name="taskDescription" th:text="${task.taskDescription}" th:readonly="${!canUpdateTask}"></textarea>
+        <textarea class="form-control" id="taskDescription" name="taskDescription" th:text="${task.taskDescription}" th:readonly="${!canUpdateTask || currentUser == null}"></textarea>
       </div>
       <div class="mb-3">
-        <label for="taskStatus" th:text="#{detailsTaskStatus} + ':'"></label>
-        <input class="form-control" type="text" id="taskStatus" th:if="${!canUpdateTask}" th:value="${task.taskStatus.statusName}" readonly>
-        <select id="taskStatus" class="form-select" name="taskStatus" th:if="${canUpdateTask}">
-          <option th:each="taskStatus : ${allTaskStatus}"
-                  th:selected="${task.taskStatus.getTaskStatusId() == taskStatus.taskStatusId}"
-                  th:value="${task.taskStatus.getTaskStatusId() == taskStatus.taskStatusId} ? ${task.taskStatus.getTaskStatusId()} : ${taskStatus.taskStatusId}"
-                  th:text="${task.taskStatus.getTaskStatusId() == taskStatus.taskStatusId} ? ${task.taskStatus.getStatusName()} : ${taskStatus.statusName}">
+        <label sec:authorize="isAnonymous() || hasAnyRole('ROLE_USER')">
+          <span th:text="#{detailsTaskStatus} + ':'"></span>
+          <input class="form-control" type="text" name="taskStatus" th:value="${task.taskStatus.statusName}" readonly>
+        </label>
 
-          </option>
-        </select>
+
+        <label sec:authorize="hasAnyRole('ROLE_EDITOR')" th:if="${canUpdateTask}">
+          <span th:text="#{detailsTaskStatus}"></span>
+          <input class="form-control" type="text" name="taskStatus" th:value="${task.taskStatus.statusName}" th:if="${!canUpdateTask}" readonly>
+          <select class="form-select" name="taskStatus">
+            <option th:each="taskStatus : ${allTaskStatus}"
+                    th:selected="${task.taskStatus.getTaskStatusId() == taskStatus.taskStatusId}"
+                    th:value="${task.taskStatus.getTaskStatusId() == taskStatus.taskStatusId} ? ${task.taskStatus.getTaskStatusId()} : ${taskStatus.taskStatusId}"
+                    th:text="${task.taskStatus.getTaskStatusId() == taskStatus.taskStatusId} ? ${task.taskStatus.getStatusName()} : ${taskStatus.statusName}">
+            </option>
+          </select>
+        </label>
       </div>
-      <button class="btn btn-success" th:if="${canUpdateTask}" th:text="#{updateTaskBtn}"></button>
-      <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteTask" th:text="#{deleteTaskBtn}"></button>
+      <button class="btn btn-success" th:if="${canUpdateTask}"
+              th:text="#{updateTaskBtn}"
+              sec:authorize="hasAnyRole('ROLE_EDITOR')"></button>
+      <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteTask"
+              th:text="#{deleteTaskBtn}"
+              sec:authorize="hasAnyRole('ROLE_EDITOR')"></button>
     </form>
 
   <!--DELETE TASK BUTTON-->
@@ -65,7 +76,9 @@
       <div class="row mt-3" th:if="${task.taskStatus.getTaskStatusId() != 3 && task.taskStatus.getTaskStatusId() != 4}">
         <button class="btn btn-link text-decoration-none text-dark text-weight-bold"
                 style="font-weight: bold;"
-                data-bs-toggle="modal" data-bs-target="#addComment" th:text="'+ ' + #{addNewComment}">
+                data-bs-toggle="modal" data-bs-target="#addComment"
+                th:text="'+ ' + #{addNewComment}"
+                sec:authorize="isAuthenticated()">
         </button>
 
         <form th:action="@{'/addComment'}" method="post">
@@ -79,10 +92,6 @@
                   <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                  <div class="row mt-2">
-                    <label for="authorName" class="form-label" th:text="#{authorName} + ':'"></label>
-                    <input type="text" id="authorName" name="commentAuthor" placeholder="Ilyas Zhuanyshev" required>
-                  </div>
                   <div class="row mt-2">
                     <label for="commentText" class="form-label" th:text="#{commentText} + ':'"></label>
                     <textarea id="commentText" name="comment" placeholder="I wanna go ..." required></textarea>

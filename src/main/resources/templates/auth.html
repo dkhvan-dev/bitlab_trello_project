@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="layout/main.html">
+<head>
+    <title>Home page</title>
+</head>
+
+    <div layout:fragment="headerNavbar" th:insert="~{navbar.html}">
+    </div>
+
+    <div layout:fragment="mainContainer">
+        <div class="alert alert-danger" role="alert" th:if="${param.error != null}">
+            Email or password is invalid!
+        </div>
+        <form class="form-control" th:action="@{'/auth'}" method="post">
+            <label>
+                <span  th:text="#{signInUpEmail} + ':'"></span>
+                <input class="form-control" type="email" name="user_email">
+            </label>
+            <label>
+                <span th:text="#{signInUpPassword} + ':'"></span>
+                <input class="form-control" type="password" name="user_password">
+            </label>
+            <button class="btn btn-primary" th:text="#{signInLink}"></button>
+        </form>
+        <a th:href="@{'/signUp'}" th:text="#{signUpLink}"></a>
+    </div>
+
+</html>

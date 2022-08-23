@@ -12,6 +12,12 @@
         <li class="nav-item">
           <a class="nav-link text-light" th:href="@{'/allCategories'}" th:text="#{categories}"></a>
         </li>
+        <li class="nav-item">
+          <a class="nav-link text-light" sec:authorize="isAnonymous()" th:href="@{'/auth'}" th:text="#{authPageName}"></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link text-light" sec:authorize="isAuthenticated()" th:href="@{'/profile'}" th:text="#{profilePageName}"></a>
+        </li>
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-item text-light" th:text="#{chooseLanguage}" role="button" data-bs-toggle="dropdown" aria-expanded="false">
           </a>
