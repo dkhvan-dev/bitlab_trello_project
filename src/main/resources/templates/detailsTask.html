@@ -23,16 +23,16 @@
         <textarea class="form-control" id="taskDescription" name="taskDescription" th:text="${task.taskDescription}" th:readonly="${!canUpdateTask || currentUser == null}"></textarea>
       </div>
       <div class="mb-3">
-        <label sec:authorize="isAnonymous() || hasAnyRole('ROLE_USER')">
+        <label sec:authorize="isAnonymous() || !hasRole('ROLE_EDITOR')">
           <span th:text="#{detailsTaskStatus} + ':'"></span>
           <input class="form-control" type="text" name="taskStatus" th:value="${task.taskStatus.statusName}" readonly>
         </label>
 
 
-        <label sec:authorize="hasAnyRole('ROLE_EDITOR')" th:if="${canUpdateTask}">
+        <label sec:authorize="hasRole('ROLE_USER') && hasRole('ROLE_EDITOR')">
           <span th:text="#{detailsTaskStatus}"></span>
-          <input class="form-control" type="text" name="taskStatus" th:value="${task.taskStatus.statusName}" th:if="${!canUpdateTask}" readonly>
-          <select class="form-select" name="taskStatus">
+          <select class="form-select" name="taskStatus"
+                  th:if="${canUpdateTask}">
             <option th:each="taskStatus : ${allTaskStatus}"
                     th:selected="${task.taskStatus.getTaskStatusId() == taskStatus.taskStatusId}"
                     th:value="${task.taskStatus.getTaskStatusId() == taskStatus.taskStatusId} ? ${task.taskStatus.getTaskStatusId()} : ${taskStatus.taskStatusId}"

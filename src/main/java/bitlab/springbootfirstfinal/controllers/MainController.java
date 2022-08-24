@@ -1,10 +1,6 @@
 package bitlab.springbootfirstfinal.controllers;
 
 import bitlab.springbootfirstfinal.models.*;
-import bitlab.springbootfirstfinal.repository.CommentsRepository;
-import bitlab.springbootfirstfinal.repository.FoldersRepository;
-import bitlab.springbootfirstfinal.repository.TaskCategoriesRepository;
-import bitlab.springbootfirstfinal.repository.TasksRepository;
 import bitlab.springbootfirstfinal.services.*;
 import bitlab.springbootfirstfinal.services.impl.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,12 +51,14 @@ public class MainController {
         return "profile";
     }
 
+    @PreAuthorize("isAnonymous()")
     @GetMapping(value = "/auth")
     public String authPage(Model model) {
         model.addAttribute("currentUser", getCurrentuser());
         return "auth";
     }
 
+    @PreAuthorize("isAnonymous()")
     @GetMapping(value = "/signUp")
     public String signUpPage(Model model) {
         model.addAttribute("currentUser", getCurrentuser());
@@ -78,7 +76,7 @@ public class MainController {
             newUser.setEmail(userEmail);
             newUser.setPassword(userPassword);
             newUser.setFullName(userFullName);
-            newUser =  userService.newUser(newUser);
+            newUser = userService.newUser(newUser);
             if (newUser != null) {
                 model.addAttribute("currentUser", getCurrentuser());
                 return "redirect:/signUp?success";
@@ -122,7 +120,7 @@ public class MainController {
         model.addAttribute("folder", folder);
         List<Tasks> tasks = taskService.tasksList(folderId);
         model.addAttribute("tasks", tasks);
-        List<TaskCategories> taskCategories = taskCategoriesService.detailsTaskCategories(folderId);
+        List<TaskCategories> taskCategories = foldersService.detailsTaskCategories(folderId);
         model.addAttribute("taskCategories", taskCategories);
         List<TaskCategories> allCategories = taskCategoriesService.allCategories();
         allCategories.removeAll(taskCategories);
@@ -135,7 +133,10 @@ public class MainController {
 
     @PostMapping(value = "/addFolder")
     public String addFolder(Folders folder) {
-        Folders newFolder = foldersService.addFolder(folder);
+        Folders newFolder = new Folders();
+        if (folder != null) {
+            newFolder = foldersService.addFolder(folder);
+        }
         return (folder != null ? "redirect:/detailsFolder/" + newFolder.getFolderId() : "redirect:/");
     }
 
@@ -192,16 +193,16 @@ public class MainController {
     }
 
     @PostMapping(value = "/addCategory")
-    private String addCategory(@RequestParam(name = "folderId") Long folderId,
+    public String addCategoryToFolder(@RequestParam(name = "folderId") Long folderId,
                                @RequestParam(name = "categoriesId") Long categoryId) {
-        taskCategoriesService.addCategory(folderId, categoryId);
+        foldersService.addCategoryToFolder(folderId, categoryId);
         return "redirect:/detailsFolder/" + folderId;
     }
 
     @PostMapping(value = "/deleteCategory")
-    private String deleteCategory(@RequestParam(name = "folderId") Long folderId,
+    public String deleteCategory(@RequestParam(name = "folderId") Long folderId,
                                   @RequestParam(name = "categoriesId") Long categoriesId) {
-        taskCategoriesService.deleteCategory(folderId, categoriesId);
+        foldersService.deleteCategoryFromFolder(folderId, categoriesId);
         return "redirect:/detailsFolder/" + folderId;
     }
 
@@ -215,6 +216,8 @@ public class MainController {
     public String editFolderTitle(@RequestParam(name = "folderId") Long folderId,
                                   @RequestParam(name = "folderTitle") String folderTitle,
                                   Model model) {
+        System.out.println(folderId);
+        System.out.println(folderTitle);
         Folders folder = foldersService.editFolderTitle(folderId, folderTitle);
         model.addAttribute("folder", folder);
         return "redirect:/detailsFolder/" + folder.getFolderId();

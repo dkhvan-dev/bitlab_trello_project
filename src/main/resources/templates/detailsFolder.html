@@ -13,45 +13,51 @@
     <div layout:fragment="mainContainer">
         <div class="col-12 mt-3 folderAndCategoriesList">
             <h2 class="text-weight-bold" th:text="${folder.folderName}"></h2>
-            <div  class="d-flex">
+            <div class="d-flex">
                 <div th:each="category : ${taskCategories}">
                     <div class="bg-primary" style="margin-right: 10px; padding: 0 10px 0 10px; border-radius: 10px; color: #ffffff;">
                         <span th:text="${category.categoriesName}" style="font-size: 10px; font-weight: bold; margin-right: 10px;"></span>
-                        <button type="button" class="btn btn-primary" data-bs-toggle="modal"
-                                th:data-bs-target="'#categoryNumber' + ${category.categoriesId}"
+                        <button type="button" class="btn btn-primary deleteCategoryModal" data-bs-toggle="modal"
+                                data-bs-target="#deleteCategory"
+                                th:data-id="${category.categoriesId}"
                                 style="padding: 0;" sec:authorize="hasAnyRole('ROLE_EDITOR')"
                         >
                             x
                         </button>
                     </div>
-
-                    <form th:action="@{'/deleteCategory'}" method="post">
-                        <input type="hidden" name="folderId" th:value="${folder.folderId}">
-                        <input type="hidden" name="categoriesId" th:value="${category.categoriesId}">
-                        <div class="modal fade customModal" th:id="'categoryNumber' + ${category.categoriesId}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" th:text="#{deleteCategoryBtn}"></h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                    </div>
-                                    <div class="modal-body" th:text="#{doYouWantRemoveCategory}">
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
-                                                th:text="#{closeBtn}"
-                                                sec:authorize="hasAnyRole('ROLE_EDITOR')"></button>
-                                        <button class="btn btn-danger" th:text="#{deleteCategoryBtn}"
-                                                sec:authorize="hasAnyRole('ROLE_EDITOR')"></button>
-                                    </div>
+                </div>
+                <form th:action="@{'/deleteCategory'}" method="post">
+                    <input type="hidden" name="folderId" th:value="${folder.folderId}">
+                    <div class="modal fade customModal" id="deleteCategory" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" th:text="#{deleteCategoryBtn}"></h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body" th:text="#{doYouWantRemoveCategory}">
+                                    <input type="hidden" id="categoriesId" name="categoriesId" value="">
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+                                            th:text="#{closeBtn}"
+                                            sec:authorize="hasAnyRole('ROLE_EDITOR')"></button>
+                                    <button class="btn btn-danger" th:text="#{deleteCategoryBtn}"
+                                            sec:authorize="hasAnyRole('ROLE_EDITOR')"></button>
                                 </div>
                             </div>
                         </div>
-                    </form>
-                </div>
+                    </div>
+                </form>
+                <script>
+                    $(document).on("click", ".deleteCategoryModal", function () {
+                        var categoryId = $(this).data("id");
+                        $(".modal-body #categoriesId").val( categoryId );
+                    });
+                </script>
             </div>
 
-            <!--ADD CATEGORY BUTTON-->
+            <!--ADD CATEGORY TO FOLDER BUTTON-->
             <button class="btn btn-link text-decoration-none text-dark text-weight-bold"
                     style="font-weight: bold;"
                     data-bs-toggle="modal" data-bs-target="#addCategory"
