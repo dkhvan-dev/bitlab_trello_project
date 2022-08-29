@@ -6,9 +6,9 @@ import bitlab.springbootfirstfinal.models.TaskCategories;
 import java.util.List;
 
 public interface FoldersService {
-    List<Folders> allFolders();
+    List<Folders> allFolders(Long currentUserId);
     Folders addFolder(Folders folder);
-    Folders detailsFolder(Long id);
+    Folders detailsFolder(Long id, Long currentUserId);
     void deleteFolder(Long folderId);
     Folders editFolderTitle(Long folderId, String folderTitle);
     List<TaskCategories> detailsTaskCategories(Long id);

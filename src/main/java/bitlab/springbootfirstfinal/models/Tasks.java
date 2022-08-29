@@ -27,9 +27,9 @@ public class Tasks {
     @Type(type = "text")
     private String TaskDescription;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     private TaskStatus taskStatus;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     private Folders folder;
 }

@@ -5,6 +5,9 @@ import bitlab.springbootfirstfinal.models.User;
 import bitlab.springbootfirstfinal.repository.RoleRepository;
 import bitlab.springbootfirstfinal.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -65,5 +68,22 @@ public class UserServiceImpl implements UserDetailsService {
             return userRepository.save(currentUser);
         }
         return null;
+    }
+
+    public User getCurrentuser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (! (authentication instanceof AnonymousAuthenticationToken)) {
+            User user = (User) authentication.getPrincipal();
+            return user;
+        }
+        return null;
+    }
+
+    public void updateUserData(String fullName){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (! (authentication instanceof AnonymousAuthenticationToken)) {
+            User user = (User) authentication.getPrincipal();
+            user.setFullName(fullName);
+        }
     }
 }

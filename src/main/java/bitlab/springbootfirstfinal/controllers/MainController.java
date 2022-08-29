@@ -5,9 +5,6 @@ import bitlab.springbootfirstfinal.services.*;
 import bitlab.springbootfirstfinal.services.impl.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -38,30 +35,42 @@ public class MainController {
 
     @GetMapping(value = "/")
     public String index(Model model) {
-        List<Folders> folders = foldersService.allFolders();
+        List<Folders> folders = new ArrayList<>();
+        if (userService.getCurrentuser() != null) {
+            folders = foldersService.allFolders(userService.getCurrentuser().getId());
+        }
         model.addAttribute("folders", folders);
-        model.addAttribute("currentUser", getCurrentuser());
+        model.addAttribute("currentUser", userService.getCurrentuser());
         return "index";
+    }
+
+    @PostMapping(value = "/addFolder")
+    public String addFolder(Folders folder) {
+        Folders newFolder = new Folders();
+        if (folder != null) {
+            newFolder = foldersService.addFolder(folder);
+        }
+        return (folder != null ? "redirect:/detailsFolder/" + newFolder.getFolderId() : "redirect:/");
     }
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping(value = "/profile")
     public String profilePage(Model model) {
-        model.addAttribute("currentUser", getCurrentuser());
+        model.addAttribute("currentUser", userService.getCurrentuser());
         return "profile";
     }
 
     @PreAuthorize("isAnonymous()")
     @GetMapping(value = "/auth")
     public String authPage(Model model) {
-        model.addAttribute("currentUser", getCurrentuser());
+        model.addAttribute("currentUser", userService.getCurrentuser());
         return "auth";
     }
 
     @PreAuthorize("isAnonymous()")
     @GetMapping(value = "/signUp")
     public String signUpPage(Model model) {
-        model.addAttribute("currentUser", getCurrentuser());
+        model.addAttribute("currentUser", userService.getCurrentuser());
         return "signUp";
     }
 
@@ -78,7 +87,7 @@ public class MainController {
             newUser.setFullName(userFullName);
             newUser = userService.newUser(newUser);
             if (newUser != null) {
-                model.addAttribute("currentUser", getCurrentuser());
+                model.addAttribute("currentUser", userService.getCurrentuser());
                 return "redirect:/signUp?success";
             } else {
                 return "redirect:/signUp?errorUnknown";
@@ -93,7 +102,7 @@ public class MainController {
                                  @RequestParam(name = "user_new_password") String newPassword,
                                  @RequestParam(name = "user_new_re_password") String newRePassword) {
         if (newPassword.equals(newRePassword)) {
-            User userUpdatedPassword = userService.updatePassword(getCurrentuser(), oldPassword, newPassword);
+            User userUpdatedPassword = userService.updatePassword(userService.getCurrentuser(), oldPassword, newPassword);
             if (userUpdatedPassword != null){
                 return "redirect:/profile?success";
             }
@@ -105,19 +114,20 @@ public class MainController {
     public String updateUserName(@RequestParam(name = "user_new_full_name") String fullName,
                                  Model model) {
         if (fullName != null) {
-            User currentUser = userService.updateFullName(getCurrentuser(), fullName);
-            updateUserData(fullName);
+            User currentUser = userService.updateFullName(userService.getCurrentuser(), fullName);
+            userService.updateUserData(fullName);
             model.addAttribute("currentUser", currentUser);
             return "redirect:/profile?success";
         }
         return "redirect:/profile?error";
     }
 
+    @PreAuthorize("isAuthenticated()")
     @GetMapping(value = "/detailsFolder/{folderId}")
     public String detailsFolder(@PathVariable(name = "folderId") Long folderId,
             Model model) {
-        Folders folder = foldersService.detailsFolder(folderId);
-        model.addAttribute("folder", folder);
+        Folders folder = foldersService.detailsFolder(folderId, userService.getCurrentuser().getId());
+
         List<Tasks> tasks = taskService.tasksList(folderId);
         model.addAttribute("tasks", tasks);
         List<TaskCategories> taskCategories = foldersService.detailsTaskCategories(folderId);
@@ -127,17 +137,28 @@ public class MainController {
         model.addAttribute("allCategories", allCategories);
         List<TaskStatus> taskStatusList = taskStatusService.allTaskStatus();
         model.addAttribute("taskStatusList", taskStatusList);
-        model.addAttribute("currentUser", getCurrentuser());
-        return "detailsFolder";
+        model.addAttribute("currentUser", userService.getCurrentuser());
+
+        if (folder != null) {
+            model.addAttribute("folder", folder);
+            return "detailsFolder";
+        } else {
+            return "redirect:/";
+        }
     }
 
-    @PostMapping(value = "/addFolder")
-    public String addFolder(Folders folder) {
-        Folders newFolder = new Folders();
-        if (folder != null) {
-            newFolder = foldersService.addFolder(folder);
-        }
-        return (folder != null ? "redirect:/detailsFolder/" + newFolder.getFolderId() : "redirect:/");
+    @PostMapping(value = "/addCategory")
+    public String addCategoryToFolder(@RequestParam(name = "folderId") Long folderId,
+                                      @RequestParam(name = "categoriesId") Long categoryId) {
+        foldersService.addCategoryToFolder(folderId, categoryId);
+        return "redirect:/detailsFolder/" + folderId;
+    }
+
+    @PostMapping(value = "/deleteCategory")
+    public String deleteCategory(@RequestParam(name = "folderId") Long folderId,
+                                 @RequestParam(name = "categoriesId") Long categoriesId) {
+        foldersService.deleteCategoryFromFolder(folderId, categoriesId);
+        return "redirect:/detailsFolder/" + folderId;
     }
 
     @GetMapping(value = "/detailsTask/{folderId}/{taskId}")
@@ -148,8 +169,10 @@ public class MainController {
         model.addAttribute("allTasks", allTasks);
         Tasks task = taskService.task(taskId);
         model.addAttribute("task", task);
-        Folders folder = foldersService.detailsFolder(folderId);
+
+        Folders folder = foldersService.detailsFolder(folderId, userService.getCurrentuser().getId());
         model.addAttribute("folder", folder);
+
         List<Comments> commentsByTaskId = commentsService.commentsByTaskId(taskId);
         model.addAttribute("commentsByTaskId", commentsByTaskId);
         List<TaskStatus> allTaskStatus = taskStatusService.allTaskStatus();
@@ -162,7 +185,7 @@ public class MainController {
             canUpdateTask = true;
         }
         model.addAttribute("canUpdateTask", canUpdateTask);
-        model.addAttribute("currentUser", getCurrentuser());
+        model.addAttribute("currentUser", userService.getCurrentuser());
         return "detailsTask";
     }
 
@@ -192,20 +215,6 @@ public class MainController {
         return "redirect:/detailsFolder/" + folderId;
     }
 
-    @PostMapping(value = "/addCategory")
-    public String addCategoryToFolder(@RequestParam(name = "folderId") Long folderId,
-                               @RequestParam(name = "categoriesId") Long categoryId) {
-        foldersService.addCategoryToFolder(folderId, categoryId);
-        return "redirect:/detailsFolder/" + folderId;
-    }
-
-    @PostMapping(value = "/deleteCategory")
-    public String deleteCategory(@RequestParam(name = "folderId") Long folderId,
-                                  @RequestParam(name = "categoriesId") Long categoriesId) {
-        foldersService.deleteCategoryFromFolder(folderId, categoriesId);
-        return "redirect:/detailsFolder/" + folderId;
-    }
-
     @PostMapping(value = "/deleteFolder")
     public String deleteFolder(@RequestParam(name = "folderId") Long folderId) {
         foldersService.deleteFolder(folderId);
@@ -228,7 +237,7 @@ public class MainController {
                              @RequestParam(name = "folderId") Long folderId,
                              @RequestParam(name = "taskId") Long taskId,
                              Model model) {
-        commentsService.addComment(comment, taskId, getCurrentuser());
+        commentsService.addComment(comment, taskId, userService.getCurrentuser());
         return "redirect:/detailsTask/" + folderId + "/" + taskId;
     }
 
@@ -236,7 +245,7 @@ public class MainController {
     public String allCategories(Model model) {
         List<TaskCategories> allCategories = taskCategoriesService.allCategories();
         model.addAttribute("allCategories", allCategories);
-        model.addAttribute("currentUser", getCurrentuser());
+        model.addAttribute("currentUser", userService.getCurrentuser());
         return "categories";
     }
 
@@ -256,23 +265,6 @@ public class MainController {
     public String editCategory(TaskCategories taskCategory) {
         taskCategoriesService.editCategory(taskCategory);
         return "redirect:/allCategories";
-    }
-
-    public User getCurrentuser() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (! (authentication instanceof AnonymousAuthenticationToken)) {
-            User user = (User) authentication.getPrincipal();
-            return user;
-        }
-        return null;
-    }
-
-    public void updateUserData(String fullName){
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (! (authentication instanceof AnonymousAuthenticationToken)) {
-            User user = (User) authentication.getPrincipal();
-            user.setFullName(fullName);
-        }
     }
 
 }

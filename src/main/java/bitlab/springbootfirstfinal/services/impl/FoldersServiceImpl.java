@@ -31,8 +31,8 @@ public class FoldersServiceImpl implements FoldersService {
     TaskCategoriesRepository taskCategoriesRepository;
 
     @Override
-    public List<Folders> allFolders() {
-        return foldersRepository.findAllByOrderByFolderIdAsc();
+    public List<Folders> allFolders(Long currentUserId) {
+        return foldersRepository.findFoldersByUserIdOrderByFolderIdAsc(currentUserId);
     }
 
     @Override
@@ -41,8 +41,12 @@ public class FoldersServiceImpl implements FoldersService {
     }
 
     @Override
-    public Folders detailsFolder(Long id) {
-        return foldersRepository.findById(id).orElse(null);
+    public Folders detailsFolder(Long id, Long currentUserId) {
+        Folders folder = foldersRepository.findById(id).orElse(null);
+        if (folder != null && folder.getUser().getId().equals(currentUserId)) {
+            return folder;
+        }
+        return null;
     }
 
     @Override
@@ -75,9 +79,8 @@ public class FoldersServiceImpl implements FoldersService {
     @Override
     public List<TaskCategories> detailsTaskCategories(Long id) {
         Folders folder = foldersRepository.findById(id).orElse(null);
-        List<TaskCategories> taskCategories = new ArrayList<>();
         if (folder != null) {
-            return taskCategories = folder.getCategories();
+            return folder.getCategories();
         }
         return null;
     }

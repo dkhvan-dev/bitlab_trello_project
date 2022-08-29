@@ -35,7 +35,8 @@
                                     <h5 class="modal-title" th:text="#{deleteCategoryBtn}"></h5>
                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                 </div>
-                                <div class="modal-body" th:text="#{doYouWantRemoveCategory}">
+                                <div class="modal-body">
+                                    <span th:text="#{doYouWantRemoveCategory}"></span>
                                     <input type="hidden" id="categoriesId" name="categoriesId" value="">
                                 </div>
                                 <div class="modal-footer">
@@ -52,6 +53,7 @@
                 <script>
                     $(document).on("click", ".deleteCategoryModal", function () {
                         var categoryId = $(this).data("id");
+                        console.log(categoryId);
                         $(".modal-body #categoriesId").val( categoryId );
                     });
                 </script>

@@ -23,6 +23,9 @@ public class Folders {
     @Column(name = "name")
     private String folderName;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.EAGER)
     private List<TaskCategories> categories;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    private User user;
 }

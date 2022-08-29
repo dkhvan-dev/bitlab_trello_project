@@ -27,6 +27,6 @@ public class Comments {
     @Type(type = "text")
     private String comment;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     private Tasks task;
 }
