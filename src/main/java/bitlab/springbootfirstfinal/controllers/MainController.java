@@ -1,8 +1,12 @@
 package bitlab.springbootfirstfinal.controllers;
 
+import bitlab.springbootfirstfinal.dto.*;
+import bitlab.springbootfirstfinal.mapper.CommentsMapper;
+import bitlab.springbootfirstfinal.mapper.UserMapper;
 import bitlab.springbootfirstfinal.models.*;
 import bitlab.springbootfirstfinal.services.*;
 import bitlab.springbootfirstfinal.services.impl.UserServiceImpl;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -13,29 +17,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Controller
+@RequiredArgsConstructor
 public class MainController {
 
-    @Autowired
-    FoldersService foldersService;
-
-    @Autowired
-    TaskService taskService;
-
-    @Autowired
-    TaskCategoriesService taskCategoriesService;
-
-    @Autowired
-    CommentsService commentsService;
-
-    @Autowired
-    TaskStatusService taskStatusService;
-
-    @Autowired
-    UserServiceImpl userService;
+    private final FoldersService foldersService;
+    private final TaskService taskService;
+    private final TaskCategoriesService taskCategoriesService;
+    private final CommentsService commentsService;
+    private final TaskStatusService taskStatusService;
+    private final UserService userService;
+    private final CommentsMapper commentsMapper;
+    private final UserMapper userMapper;
 
     @GetMapping(value = "/")
     public String index(Model model) {
-        List<Folders> folders = new ArrayList<>();
+        List<FoldersDTO> folders = new ArrayList<>();
         if (userService.getCurrentuser() != null) {
             folders = foldersService.allFolders(userService.getCurrentuser().getId());
         }
@@ -55,7 +51,6 @@ public class MainController {
 
     @PostMapping(value = "/deleteFolder")
     public String deleteFolder(@RequestParam(name = "folderId") Long folderId) {
-        System.out.println(folderId);
         foldersService.deleteFolder(folderId, userService.getCurrentuser().getId());
         return "redirect:/";
     }
@@ -133,17 +128,20 @@ public class MainController {
     @GetMapping(value = "/detailsFolder/{folderId}")
     public String detailsFolder(@PathVariable(name = "folderId") Long folderId,
             Model model) {
-        Folders folder = foldersService.detailsFolder(folderId, userService.getCurrentuser().getId());
+        FoldersDTO folder = foldersService.detailsFolder(folderId, userService.getCurrentuser().getId());
 
-        List<Tasks> tasks = taskService.tasksList(folderId);
+        List<TasksDTO> tasks = taskService.tasksList(folderId);
         model.addAttribute("tasks", tasks);
-        List<TaskCategories> taskCategories = foldersService.detailsTaskCategories(folderId);
+
+        List<TaskCategoriesDTO> taskCategories = foldersService.detailsTaskCategories(folderId);
         model.addAttribute("taskCategories", taskCategories);
-        List<TaskCategories> allCategories = taskCategoriesService.allCategories();
+        List<TaskCategoriesDTO> allCategories = taskCategoriesService.allCategories();
         allCategories.removeAll(taskCategories);
         model.addAttribute("allCategories", allCategories);
-        List<TaskStatus> taskStatusList = taskStatusService.allTaskStatus();
+
+        List<TaskStatusDTO> taskStatusList = taskStatusService.allTaskStatus();
         model.addAttribute("taskStatusList", taskStatusList);
+
         model.addAttribute("currentUser", userService.getCurrentuser());
 
         if (folder != null) {
@@ -172,28 +170,32 @@ public class MainController {
     public String detailsTask(@PathVariable(name = "folderId") Long folderId,
             @PathVariable(name = "taskId") Long taskId,
             Model model) {
-        List<Tasks> allTasks = taskService.tasksList(folderId);
+        List<TasksDTO> allTasks = taskService.tasksList(folderId);
         model.addAttribute("allTasks", allTasks);
-        Tasks task = taskService.task(taskId);
-        model.addAttribute("task", task);
 
-        Folders folder = foldersService.detailsFolder(folderId, userService.getCurrentuser().getId());
-        model.addAttribute("folder", folder);
+        TasksDTO task = taskService.task(taskId);
+        if (task != null && userService.getCurrentuser() != null) {
+            model.addAttribute("task", task);
+            FoldersDTO folder = foldersService.detailsFolder(folderId, userService.getCurrentuser().getId());
+            model.addAttribute("folder", folder);
 
-        List<Comments> commentsByTaskId = commentsService.commentsByTaskId(taskId);
-        model.addAttribute("commentsByTaskId", commentsByTaskId);
-        List<TaskStatus> allTaskStatus = taskStatusService.allTaskStatus();
-        model.addAttribute("allTaskStatus", allTaskStatus);
+            List<CommentsDTO> commentsByTaskId = commentsService.commentsByTaskId(taskId);
+            model.addAttribute("commentsByTaskId", commentsByTaskId);
 
-        boolean canUpdateTask = true;
-        if (task.getTaskStatus().getTaskStatusId() > 2) {
-            canUpdateTask = false;
-        } else {
-            canUpdateTask = true;
+            List<TaskStatusDTO> allTaskStatus = taskStatusService.allTaskStatus();
+            model.addAttribute("allTaskStatus", allTaskStatus);
+
+            boolean canUpdateTask = true;
+            if (task.getTaskStatus().getTaskStatusId() > 2) {
+                canUpdateTask = false;
+            } else {
+                canUpdateTask = true;
+            }
+            model.addAttribute("canUpdateTask", canUpdateTask);
+            model.addAttribute("currentUser", userService.getCurrentuser());
+            return "detailsTask";
         }
-        model.addAttribute("canUpdateTask", canUpdateTask);
-        model.addAttribute("currentUser", userService.getCurrentuser());
-        return "detailsTask";
+        return "auth";
     }
 
     @PostMapping(value = "/addTask")
@@ -226,26 +228,17 @@ public class MainController {
     public String editFolderTitle(@RequestParam(name = "folderId") Long folderId,
                                   @RequestParam(name = "folderTitle") String folderTitle,
                                   Model model) {
-        System.out.println(folderId);
-        System.out.println(folderTitle);
         Folders folder = foldersService.editFolderTitle(folderId, folderTitle);
         model.addAttribute("folder", folder);
         return "redirect:/detailsFolder/" + folder.getFolderId();
     }
 
-    @PostMapping(value = "/addComment")
-    public String addComment(Comments comment,
-                             @RequestParam(name = "folderId") Long folderId,
-                             @RequestParam(name = "taskId") Long taskId,
-                             Model model) {
-        commentsService.addComment(comment, taskId, userService.getCurrentuser());
-        return "redirect:/detailsTask/" + folderId + "/" + taskId;
-    }
 
     @GetMapping(value = "/allCategories")
     public String allCategories(Model model) {
-        List<TaskCategories> allCategories = taskCategoriesService.allCategories();
+        List<TaskCategoriesDTO> allCategories = taskCategoriesService.allCategories();
         model.addAttribute("allCategories", allCategories);
+
         model.addAttribute("currentUser", userService.getCurrentuser());
         return "categories";
     }

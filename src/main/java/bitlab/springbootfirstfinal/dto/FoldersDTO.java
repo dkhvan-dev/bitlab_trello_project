@@ -11,6 +11,6 @@ import java.util.List;
 public class FoldersDTO {
     private Long folderId;
     private String folderName;
-    private List<TaskCategories> categories;
+    private List<TaskCategoriesDTO> categories;
     private UserDTO user;
 }

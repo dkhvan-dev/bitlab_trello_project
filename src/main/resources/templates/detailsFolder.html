@@ -20,7 +20,7 @@
                         <button type="button" class="btn btn-primary deleteCategoryModal" data-bs-toggle="modal"
                                 data-bs-target="#deleteCategory"
                                 th:data-id="${category.categoriesId}"
-                                style="padding: 0;" sec:authorize="hasAnyRole('ROLE_EDITOR')"
+                                style="padding: 0;" sec:authorize="isAuthenticated()"
                         >
                             x
                         </button>
@@ -42,9 +42,9 @@
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
                                             th:text="#{closeBtn}"
-                                            sec:authorize="hasAnyRole('ROLE_EDITOR')"></button>
+                                            sec:authorize="isAuthenticated()"></button>
                                     <button class="btn btn-danger" th:text="#{deleteCategoryBtn}"
-                                            sec:authorize="hasAnyRole('ROLE_EDITOR')"></button>
+                                            sec:authorize="isAuthenticated()"></button>
                                 </div>
                             </div>
                         </div>
@@ -65,7 +65,7 @@
                     data-bs-toggle="modal" data-bs-target="#addCategory"
                     th:if="${!allCategories.isEmpty()}"
                     th:text="'+ ' + #{addCategoryToFolder}"
-                    sec:authorize="hasAnyRole('ROLE_EDITOR')">
+                    sec:authorize="isAuthenticated()">
             </button>
 
             <form th:action="@{'/addCategory'}" method="post">
@@ -101,7 +101,7 @@
                     data-bs-target="#addNewTask"
                     style="font-weight: bold;"
                     th:text="'+ ' + #{newTask}"
-                    sec:authorize="hasAnyRole('ROLE_EDITOR')">
+                    sec:authorize="isAuthenticated()">
             </button>
 
             <form th:action="@{'/addTask'}" method="post">

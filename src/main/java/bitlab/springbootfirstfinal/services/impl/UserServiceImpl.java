@@ -4,12 +4,12 @@ import bitlab.springbootfirstfinal.models.Role;
 import bitlab.springbootfirstfinal.models.User;
 import bitlab.springbootfirstfinal.repository.RoleRepository;
 import bitlab.springbootfirstfinal.repository.UserRepository;
+import bitlab.springbootfirstfinal.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -17,7 +17,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 
 @Service
-public class UserServiceImpl implements UserDetailsService {
+public class UserServiceImpl implements UserService {
     @Autowired
     private UserRepository userRepository;
 

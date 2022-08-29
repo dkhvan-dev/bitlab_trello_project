@@ -1,8 +1,13 @@
 package bitlab.springbootfirstfinal.services.impl;
 
+import bitlab.springbootfirstfinal.dto.FoldersDTO;
+import bitlab.springbootfirstfinal.dto.TaskCategoriesDTO;
+import bitlab.springbootfirstfinal.mapper.FoldersMapper;
+import bitlab.springbootfirstfinal.mapper.TaskCategoriesMapper;
 import bitlab.springbootfirstfinal.models.*;
 import bitlab.springbootfirstfinal.repository.*;
 import bitlab.springbootfirstfinal.services.FoldersService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -10,26 +15,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class FoldersServiceImpl implements FoldersService {
 
-    @Autowired
-    FoldersRepository foldersRepository;
-
-    @Autowired
-    TasksRepository tasksRepository;
-
-    @Autowired
-    CommentsRepository commentsRepository;
-
-    @Autowired
-    TaskCategoriesRepository taskCategoriesRepository;
-
-    @Autowired
-    UserRepository userRepository;
+    private final FoldersRepository foldersRepository;
+    private final TasksRepository tasksRepository;
+    private final CommentsRepository commentsRepository;
+    private final TaskCategoriesRepository taskCategoriesRepository;
+    private final UserRepository userRepository;
+    private final FoldersMapper foldersMapper;
+    private final TaskCategoriesMapper taskCategoriesMapper;
 
     @Override
-    public List<Folders> allFolders(Long currentUserId) {
-        return foldersRepository.findFoldersByUserIdOrderByFolderIdAsc(currentUserId);
+    public List<FoldersDTO> allFolders(Long currentUserId) {
+        return foldersMapper.toDtoList(foldersRepository.findFoldersByUserIdOrderByFolderIdAsc(currentUserId));
     }
 
     @Override
@@ -42,10 +41,10 @@ public class FoldersServiceImpl implements FoldersService {
     }
 
     @Override
-    public Folders detailsFolder(Long id, Long currentUserId) {
+    public FoldersDTO detailsFolder(Long id, Long currentUserId) {
         Folders folder = foldersRepository.findById(id).orElse(null);
         if (folder != null && folder.getUser().getId().equals(currentUserId)) {
-            return folder;
+            return foldersMapper.toDto(folder);
         }
         return null;
     }
@@ -62,7 +61,6 @@ public class FoldersServiceImpl implements FoldersService {
                 commentsRepository.deleteAll(comments);
             }
             tasksRepository.deleteAll(tasks);
-//            foldersRepository.save(folder);
             foldersRepository.deleteById(folderId);
         }
     }
@@ -79,10 +77,10 @@ public class FoldersServiceImpl implements FoldersService {
     }
 
     @Override
-    public List<TaskCategories> detailsTaskCategories(Long id) {
+    public List<TaskCategoriesDTO> detailsTaskCategories(Long id) {
         Folders folder = foldersRepository.findById(id).orElse(null);
         if (folder != null) {
-            return folder.getCategories();
+            return taskCategoriesMapper.toDtoList(folder.getCategories());
         }
         return null;
     }

@@ -1,26 +1,28 @@
 package bitlab.springbootfirstfinal.services.impl;
 
+import bitlab.springbootfirstfinal.dto.TaskCategoriesDTO;
+import bitlab.springbootfirstfinal.mapper.TaskCategoriesMapper;
 import bitlab.springbootfirstfinal.models.Folders;
 import bitlab.springbootfirstfinal.models.TaskCategories;
 import bitlab.springbootfirstfinal.repository.FoldersRepository;
 import bitlab.springbootfirstfinal.repository.TaskCategoriesRepository;
 import bitlab.springbootfirstfinal.services.TaskCategoriesService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class TaskCategoriesImpl implements TaskCategoriesService {
-    @Autowired
-    FoldersRepository foldersRepository;
-
-    @Autowired
-    TaskCategoriesRepository taskCategoriesRepository;
+    private final FoldersRepository foldersRepository;
+    private final TaskCategoriesRepository taskCategoriesRepository;
+    private final TaskCategoriesMapper taskCategoriesMapper;
 
     @Override
-    public List<TaskCategories> allCategories() {
-        return taskCategoriesRepository.findAllByOrderByCategoriesIdAsc();
+    public List<TaskCategoriesDTO> allCategories() {
+        return taskCategoriesMapper.toDtoList(taskCategoriesRepository.findAllByOrderByCategoriesIdAsc());
     }
 
     @Override

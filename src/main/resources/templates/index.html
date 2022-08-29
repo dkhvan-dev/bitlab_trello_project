@@ -17,7 +17,7 @@
                     data-bs-toggle="modal"
                     data-bs-target="#addNewFolder"
                     th:text="'+ ' + #{newFolder}"
-                    sec:authorize="hasAnyRole('ROLE_EDITOR')">
+                    sec:authorize="isAuthenticated()">
             </button>
 
             <div class="modal fade customModal" id="addNewFolder"
@@ -58,13 +58,13 @@
                     th:text="#{editFolderBtn}"
                     th:data-id="${folder.folderId}"
                     th:data-name="${folder.folderName}"
-                    sec:authorize="hasAnyRole('ROLE_EDITOR')"></button>
+                    sec:authorize="isAuthenticated()"></button>
 
             <button type="button" class="btn btn-danger mt-3 btn-antifocus shadow-drop-br deleteFolderModal" data-bs-toggle="modal"
                     data-bs-target="#deleteFolder"
                     th:data-id="${folder.folderId}"
                     th:text="#{deleteFolderBtn}"
-                    sec:authorize="hasAnyRole('ROLE_EDITOR')"></button>
+                    sec:authorize="isAuthenticated()"></button>
         </div>
 
         <!--EDIT FOLDER TITLE MODAL-->

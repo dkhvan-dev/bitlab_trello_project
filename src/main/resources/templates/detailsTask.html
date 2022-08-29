@@ -6,11 +6,13 @@
     <title>Task page</title>
 </head>
 
+<body onload="loadComments()">
+
   <div layout:fragment="headerNavbar" th:insert="~{navbar.html}">
   </div>
 
   <div layout:fragment="mainContainer">
-  <!--UPDATE TASK BUTTON-->
+    <!--UPDATE TASK BUTTON-->
     <form class="mt-3" th:action="@{'/updateTask'}" method="post">
       <input type="hidden" name="taskId" th:value="${task.taskId}">
       <input type="hidden" name="folderId" th:value="${folder.folderId}">
@@ -23,16 +25,15 @@
         <textarea class="form-control" id="taskDescription" name="taskDescription" th:text="${task.taskDescription}" th:readonly="${!canUpdateTask || currentUser == null}"></textarea>
       </div>
       <div class="mb-3">
-        <label sec:authorize="isAnonymous() || !hasRole('ROLE_EDITOR')">
+        <label sec:authorize="isAnonymous()" th:if="${!canUpdateTask}">
           <span th:text="#{detailsTaskStatus} + ':'"></span>
           <input class="form-control" type="text" name="taskStatus" th:value="${task.taskStatus.statusName}" readonly>
         </label>
 
 
-        <label sec:authorize="hasRole('ROLE_USER') && hasRole('ROLE_EDITOR')">
+        <label sec:authorize="isAuthenticated()" th:if="${canUpdateTask}">
           <span th:text="#{detailsTaskStatus}"></span>
-          <select class="form-select" name="taskStatus"
-                  th:if="${canUpdateTask}">
+          <select class="form-select" name="taskStatus">
             <option th:each="taskStatus : ${allTaskStatus}"
                     th:selected="${task.taskStatus.getTaskStatusId() == taskStatus.taskStatusId}"
                     th:value="${task.taskStatus.getTaskStatusId() == taskStatus.taskStatusId} ? ${task.taskStatus.getTaskStatusId()} : ${taskStatus.taskStatusId}"
@@ -43,13 +44,13 @@
       </div>
       <button class="btn btn-success" th:if="${canUpdateTask}"
               th:text="#{updateTaskBtn}"
-              sec:authorize="hasAnyRole('ROLE_EDITOR')"></button>
+              sec:authorize="isAuthenticated()"></button>
       <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteTask"
               th:text="#{deleteTaskBtn}"
-              sec:authorize="hasAnyRole('ROLE_EDITOR')"></button>
+              sec:authorize="isAuthenticated()"></button>
     </form>
 
-  <!--DELETE TASK BUTTON-->
+    <!--DELETE TASK BUTTON-->
     <form th:action="@{'/deleteTask'}" method="post">
       <input type="hidden" name="taskId" th:value="${task.taskId}">
       <input type="hidden" name="folderId" th:value="${folder.folderId}">
@@ -71,7 +72,7 @@
       </div>
     </form>
 
-  <!--COMMENTS-->
+    <!--COMMENTS-->
     <div class="col-12 mt-3">
       <div class="row mt-3" th:if="${task.taskStatus.getTaskStatusId() != 3 && task.taskStatus.getTaskStatusId() != 4}">
         <button class="btn btn-link text-decoration-none text-dark text-weight-bold"
@@ -81,38 +82,82 @@
                 sec:authorize="isAuthenticated()">
         </button>
 
-        <form th:action="@{'/addComment'}" method="post">
-          <input type="hidden" name="folderId" th:value="${folder.folderId}">
-          <input type="hidden" name="taskId" th:value="${task.taskId}">
-          <div class="modal fade customModal" id="addComment" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-            <div class="modal-dialog">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <h5 class="modal-title" th:text="#{addNewComment}"></h5>
-                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <!--        <form th:action="@{'/addComment'}" method="post">-->
+        <input type="hidden" name="folderId" id="folderId" th:value="${folder.folderId}">
+        <input type="hidden" name="taskId" id="taskId" th:value="${task.taskId}">
+        <div class="modal fade customModal" id="addComment" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" th:text="#{addNewComment}"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <div class="row mt-2">
+                  <label for="commentText" class="form-label" th:text="#{commentText} + ':'"></label>
+                  <textarea id="commentText" name="comment" placeholder="I wanna go ..." required></textarea>
                 </div>
-                <div class="modal-body">
-                  <div class="row mt-2">
-                    <label for="commentText" class="form-label" th:text="#{commentText} + ':'"></label>
-                    <textarea id="commentText" name="comment" placeholder="I wanna go ..." required></textarea>
-                  </div>
-                </div>
-                <div class="modal-footer">
-                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" th:text="#{closeBtn}"></button>
-                  <button class="btn btn-primary" th:text="#{addNewComment}"></button>
-                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" th:text="#{closeBtn}"></button>
+                <button onclick="addComment()" class="btn btn-primary" th:text="#{addNewComment}" data-bs-dismiss="modal"></button>
               </div>
             </div>
           </div>
-        </form>
+        </div>
+        <!--        </form>-->
       </div>
 
-      <div class="col-6 mt-3">
-        <div class="col-12" th:each="comment : ${commentsByTaskId}" style="padding: 10px; border: 1px solid #6c6c6c; border-radius: 10px;">
-          <h5><span style="font-weight: lighter;" th:text="#{authorAddedComment} + ': '"></span><span th:text="${comment.commentAuthor}" style="font-weight: bold;"></span></h5>
-          <p th:text="${comment.comment}"></p>
-        </div>
+      <script>
+        function loadComments() {
+          var taskId = document.querySelector("#taskId").value;
+          const xhttp = new XMLHttpRequest();
+          xhttp.onload = function () {
+            const result = this.responseText;
+            var commentsList = JSON.parse(result);
+            var htmlCode = "";
+            for (i = 0; i < commentsList.length; i++) {
+              htmlCode += "<div class='col-12 mt-3' style='padding: 10px; border: 1px solid #6c6c6c; border-radius: 10px;'>";
+              htmlCode += "<h5><span style='font-weight: lighter;'>POSTED BY </span><span style='font-weight: bold;'>" + commentsList[i]["task"]["folder"]["user"]["fullName"] + "</span></h5>";
+              htmlCode += "<p>" + commentsList[i]["comment"] + "</p>";
+              htmlCode += "</div>";
+            }
+            document.querySelector(".commentsContent").innerHTML = htmlCode;
+          }
+          xhttp.open("GET", "/api/comments/" + taskId);
+          xhttp.send();
+        }
+
+        function addComment() {
+          var taskId = document.querySelector("#taskId").value;
+          var commentsObj = {
+            "comment": document.querySelector("#commentText").value,
+          }
+          var post = JSON.stringify(commentsObj);
+          var xhr = new XMLHttpRequest();
+
+          xhr.open('POST', "/api/comments/" + taskId, true);
+          xhr.setRequestHeader('Content-type', 'application/json; charset=UTF-8');
+          xhr.send(post);
+
+          xhr.onload = function () {
+            if (xhr.status === 201) {
+              loadComments();
+              document.querySelector("#commentText").value = "";
+            }
+          }
+        }
+      </script>
+      <div class="col-6 mt-3 commentsContent">
       </div>
+
+      <!--      <div class="col-6 mt-3 commentsContent">-->
+      <!--        <div class="col-12" th:each="comment : ${commentsByTaskId}" style="padding: 10px; border: 1px solid #6c6c6c; border-radius: 10px;">-->
+      <!--          <h5><span style="font-weight: lighter;" th:text="#{authorAddedComment} + ': '"></span><span th:text="${comment.commentAuthor}" style="font-weight: bold;"></span></h5>-->
+      <!--          <p th:text="${comment.comment}"></p>-->
+      <!--        </div>-->
+      <!--      </div>-->
     </div>
   </div>
+</body>
 </html>

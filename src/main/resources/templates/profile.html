@@ -51,9 +51,7 @@
                 </div>
             </div>
         </form>
-        <form class="mt-3" th:action="@{'/signOut'}" method="post">
-            <button class="btn btn-danger" th:text="#{logoutBtn}"></button>
-        </form>
+        <a th:href="@{'/signOut'}" class="btn btn-danger" th:text="#{logoutBtn}"></a>
     </div>
 
 </html>

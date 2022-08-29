@@ -1,5 +1,7 @@
 package bitlab.springbootfirstfinal.services.impl;
 
+import bitlab.springbootfirstfinal.dto.TasksDTO;
+import bitlab.springbootfirstfinal.mapper.TasksMapper;
 import bitlab.springbootfirstfinal.models.Comments;
 import bitlab.springbootfirstfinal.models.Folders;
 import bitlab.springbootfirstfinal.models.TaskStatus;
@@ -8,30 +10,28 @@ import bitlab.springbootfirstfinal.repository.CommentsRepository;
 import bitlab.springbootfirstfinal.repository.FoldersRepository;
 import bitlab.springbootfirstfinal.repository.TasksRepository;
 import bitlab.springbootfirstfinal.services.TaskService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class TasksServiceImpl implements TaskService {
-    @Autowired
-    TasksRepository tasksRepository;
-
-    @Autowired
-    FoldersRepository foldersRepository;
-
-    @Autowired
-    CommentsRepository commentsRepository;
+    private final TasksRepository tasksRepository;
+    private final FoldersRepository foldersRepository;
+    private final CommentsRepository commentsRepository;
+    private final TasksMapper tasksMapper;
 
     @Override
-    public Tasks task(Long id) {
-        return tasksRepository.findById(id).orElse(null);
+    public TasksDTO task(Long id) {
+        return tasksMapper.toDto(tasksRepository.findById(id).orElse(null));
     }
 
     @Override
-    public List<Tasks> tasksList(Long id) {
-        return tasksRepository.searchAllByFolder_FolderIdOrderByTaskId(id);
+    public List<TasksDTO> tasksList(Long id) {
+        return tasksMapper.toDtoList(tasksRepository.searchAllByFolder_FolderIdOrderByTaskId(id));
     }
 
     @Override
