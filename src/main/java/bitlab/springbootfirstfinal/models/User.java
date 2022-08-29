@@ -33,7 +33,7 @@ public class User implements UserDetails {
     @Column(name = "full_name")
     private String fullName;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.EAGER)
     private List<Role> roles;
 
     @Override

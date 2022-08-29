@@ -49,27 +49,26 @@
         </div>
 
     <!--FOLDERS LIST-->
-        <!--DELETE FOLDER-->
-        <form th:action="@{'/deleteFolder'}" method="post">
-            <div class="col-12 mt-3 folderAndCategoriesList" th:each="folder : ${folders}">
-                <input type="hidden" name="folderId" th:value="${folder.folderId}">
-                <h2 class="text-weight-bold" th:text="${folder.folderName}"></h2>
-                <a th:href="@{'/detailsFolder/' + ${folder.folderId}}" class="btn btn-primary mt-3 shadow-drop-br" style="width: 100px;" th:text="#{detailsBtn}"></a>
-                <button type="button" class="btn btn-success mt-3 btn-antifocus shadow-drop-br editFolderModal" data-bs-toggle="modal"
-                        data-bs-target="#editFolderTitle"
-                        th:text="#{editFolderBtn}"
-                        th:data-id="${folder.folderId}"
-                        th:data-name="${folder.folderName}"
-                        sec:authorize="hasAnyRole('ROLE_EDITOR')"></button>
+        <div class="col-12 mt-3 folderAndCategoriesList" th:each="folder : ${folders}">
+            <input type="hidden" name="folderId" th:value="${folder.folderId}">
+            <h2 class="text-weight-bold" th:text="${folder.folderName}"></h2>
+            <a th:href="@{'/detailsFolder/' + ${folder.folderId}}" class="btn btn-primary mt-3 shadow-drop-br" style="width: 100px;" th:text="#{detailsBtn}"></a>
+            <button type="button" class="btn btn-success mt-3 btn-antifocus shadow-drop-br editFolderModal" data-bs-toggle="modal"
+                    data-bs-target="#editFolderTitle"
+                    th:text="#{editFolderBtn}"
+                    th:data-id="${folder.folderId}"
+                    th:data-name="${folder.folderName}"
+                    sec:authorize="hasAnyRole('ROLE_EDITOR')"></button>
 
-                <button class="btn btn-danger mt-3 btn-antifocus shadow-drop-br"
-                        th:text="#{deleteFolderBtn}"
-                        sec:authorize="hasAnyRole('ROLE_EDITOR')"></button>
-            </div>
-        </form>
+            <button type="button" class="btn btn-danger mt-3 btn-antifocus shadow-drop-br deleteFolderModal" data-bs-toggle="modal"
+                    data-bs-target="#deleteFolder"
+                    th:data-id="${folder.folderId}"
+                    th:text="#{deleteFolderBtn}"
+                    sec:authorize="hasAnyRole('ROLE_EDITOR')"></button>
+        </div>
 
-            <!--EDIT FOLDER TITLE MODAL-->
-            <div class="modal fade customModal" id="editFolderTitle"
+        <!--EDIT FOLDER TITLE MODAL-->
+        <div class="modal fade customModal" id="editFolderTitle"
                  data-bs-backdrop="static"
                  data-bs-keyboard="false"
                  tabindex="-1"
@@ -94,17 +93,49 @@
                         </div>
                     </div>
                 </form>
-                <script>
-                    $(document).on("click", ".editFolderModal", function () {
-                        var folderId = $(this).data('id');
-                        var folderTitle = $(this).data('name');
-                        $(".modal-body #folderId").val( folderId );
-                        $(".modal-body #folderTitle").val( folderTitle );
-                    });
-                </script>
             </div>
 
+        <!--DELETE FOLDER MODAL-->
+        <div class="modal fade customModal" id="deleteFolder"
+             data-bs-backdrop="static"
+             data-bs-keyboard="false"
+             tabindex="-1"
+             aria-labelledby="staticBackdropLabel"
+             aria-hidden="true">
+            <form th:action="@{'/deleteFolder'}" method="post">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" th:text="#{deleteFolderBtn}"></h5>
+                            <button type="button" class="btn-close btn-antifocus" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <span th:text="#{doYouWantRemoveFolder}"></span>
+                            <input type="hidden" id="deleteFolderId" name="folderId" value="" />
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary btn-antifocus" data-bs-dismiss="modal" th:text="#{closeBtn}"></button>
+                            <button class="btn btn-primary btn-antifocus" th:text="#{deleteFolderModalBtn}"></button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
 
+        <!--SEND DATA-->
+        <script>
+            $(document).on("click", ".editFolderModal", function () {
+                var folderId = $(this).data('id');
+                var folderTitle = $(this).data('name');
+                $(".modal-body #folderId").val( folderId );
+                $(".modal-body #folderTitle").val( folderTitle );
+            });
+
+            $(document).on("click", ".deleteFolderModal", function () {
+                var deleteFolderId = $(this).data('id');
+                $(".modal-body #deleteFolderId").val( deleteFolderId );
+            });
+        </script>
 
     </div>
 

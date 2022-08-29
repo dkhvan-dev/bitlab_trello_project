@@ -48,9 +48,16 @@ public class MainController {
     public String addFolder(Folders folder) {
         Folders newFolder = new Folders();
         if (folder != null) {
-            newFolder = foldersService.addFolder(folder);
+            newFolder = foldersService.addFolder(folder, userService.getCurrentuser().getId());
         }
         return (folder != null ? "redirect:/detailsFolder/" + newFolder.getFolderId() : "redirect:/");
+    }
+
+    @PostMapping(value = "/deleteFolder")
+    public String deleteFolder(@RequestParam(name = "folderId") Long folderId) {
+        System.out.println(folderId);
+        foldersService.deleteFolder(folderId, userService.getCurrentuser().getId());
+        return "redirect:/";
     }
 
     @PreAuthorize("isAuthenticated()")
@@ -213,12 +220,6 @@ public class MainController {
                              @RequestParam(name = "folderId") Long folderId) {
         taskService.deleteTask(taskId);
         return "redirect:/detailsFolder/" + folderId;
-    }
-
-    @PostMapping(value = "/deleteFolder")
-    public String deleteFolder(@RequestParam(name = "folderId") Long folderId) {
-        foldersService.deleteFolder(folderId);
-        return "redirect:/";
     }
 
     @PostMapping(value = "/editFolderTitle")

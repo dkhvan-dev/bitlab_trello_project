@@ -25,7 +25,7 @@ public class Tasks {
 
     @Column(name = "description")
     @Type(type = "text")
-    private String TaskDescription;
+    private String taskDescription;
 
     @ManyToOne(fetch = FetchType.EAGER)
     private TaskStatus taskStatus;

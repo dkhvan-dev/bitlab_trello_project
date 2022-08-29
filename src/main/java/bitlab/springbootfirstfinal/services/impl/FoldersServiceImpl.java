@@ -1,13 +1,7 @@
 package bitlab.springbootfirstfinal.services.impl;
 
-import bitlab.springbootfirstfinal.models.Comments;
-import bitlab.springbootfirstfinal.models.Folders;
-import bitlab.springbootfirstfinal.models.TaskCategories;
-import bitlab.springbootfirstfinal.models.Tasks;
-import bitlab.springbootfirstfinal.repository.CommentsRepository;
-import bitlab.springbootfirstfinal.repository.FoldersRepository;
-import bitlab.springbootfirstfinal.repository.TaskCategoriesRepository;
-import bitlab.springbootfirstfinal.repository.TasksRepository;
+import bitlab.springbootfirstfinal.models.*;
+import bitlab.springbootfirstfinal.repository.*;
 import bitlab.springbootfirstfinal.services.FoldersService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,13 +24,20 @@ public class FoldersServiceImpl implements FoldersService {
     @Autowired
     TaskCategoriesRepository taskCategoriesRepository;
 
+    @Autowired
+    UserRepository userRepository;
+
     @Override
     public List<Folders> allFolders(Long currentUserId) {
         return foldersRepository.findFoldersByUserIdOrderByFolderIdAsc(currentUserId);
     }
 
     @Override
-    public Folders addFolder(Folders folder) {
+    public Folders addFolder(Folders folder, Long currentUserId) {
+        User currentUser = userRepository.findById(currentUserId).orElse(null);
+        if (currentUser != null) {
+            folder.setUser(currentUser);
+        }
         return foldersRepository.save(folder);
     }
 
@@ -50,9 +51,10 @@ public class FoldersServiceImpl implements FoldersService {
     }
 
     @Override
-    public void deleteFolder(Long folderId) {
+    public void deleteFolder(Long folderId, Long currentUserId) {
+        System.out.println(folderId);
         Folders folder = foldersRepository.findById(folderId).orElse(null);
-        if (folder != null) {
+        if (folder != null && folder.getUser().getId().equals(currentUserId)) {
             folder.setCategories(new ArrayList<>());
             List<Tasks> tasks = tasksRepository.searchAllByFolder_FolderIdOrderByTaskId(folderId);
             for (int i = 0; i < tasks.size(); i++) {
@@ -60,7 +62,7 @@ public class FoldersServiceImpl implements FoldersService {
                 commentsRepository.deleteAll(comments);
             }
             tasksRepository.deleteAll(tasks);
-            foldersRepository.save(folder);
+//            foldersRepository.save(folder);
             foldersRepository.deleteById(folderId);
         }
     }

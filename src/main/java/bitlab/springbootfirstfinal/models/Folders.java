@@ -23,7 +23,7 @@ public class Folders {
     @Column(name = "name")
     private String folderName;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     private List<TaskCategories> categories;
 
     @ManyToOne(fetch = FetchType.EAGER)

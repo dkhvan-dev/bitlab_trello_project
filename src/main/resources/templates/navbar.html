@@ -10,7 +10,7 @@
           <a class="nav-link text-light" href="/" th:text="#{allFolders}"></a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-light" th:href="@{'/allCategories'}" th:text="#{categories}"></a>
+          <a class="nav-link text-light" sec:authorize="isAuthenticated()" th:href="@{'/allCategories'}" th:text="#{categories}"></a>
         </li>
         <li class="nav-item">
           <a class="nav-link text-light" sec:authorize="isAnonymous()" th:href="@{'/auth'}" th:text="#{authPageName}"></a>
