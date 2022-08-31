@@ -8,6 +8,8 @@ import bitlab.springbootfirstfinal.services.*;
 import bitlab.springbootfirstfinal.services.impl.UserServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -222,6 +224,15 @@ public class MainController {
                              @RequestParam(name = "folderId") Long folderId) {
         taskService.deleteTask(taskId);
         return "redirect:/detailsFolder/" + folderId;
+    }
+
+    @PostMapping(value = "/addComment")
+    public String addComment(Comments comment,
+                             @RequestParam(name = "folderId") Long folderId,
+                             @RequestParam(name = "taskId") Long taskId,
+                             Model model) {
+        commentsService.addComment(comment, taskId, userService.getCurrentuser());
+        return "redirect:/detailsTask/" + folderId + "/" + taskId;
     }
 
     @PostMapping(value = "/editFolderTitle")

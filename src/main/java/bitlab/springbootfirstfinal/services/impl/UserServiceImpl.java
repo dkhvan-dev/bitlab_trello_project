@@ -5,9 +5,11 @@ import bitlab.springbootfirstfinal.models.User;
 import bitlab.springbootfirstfinal.repository.RoleRepository;
 import bitlab.springbootfirstfinal.repository.UserRepository;
 import bitlab.springbootfirstfinal.services.UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -15,26 +17,27 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     @Autowired
     private UserRepository userRepository;
-
     @Autowired
     private RoleRepository roleRepository;
-
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.findAllByEmail(username);
-        if (user != null) {
-            return user;
-        }
-        throw new UsernameNotFoundException("USER NOT FOUND");
-    }
+//    @Override
+//    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+//        User user = userRepository.findAllByEmail(username);
+//        if (user != null) {
+//            return user;
+//        }
+//        throw new UsernameNotFoundException("USER NOT FOUND");
+//    }
 
     public User newUser(User user) {
         User checkUser = userRepository.findAllByEmail(user.getEmail());
@@ -85,5 +88,28 @@ public class UserServiceImpl implements UserService {
             User user = (User) authentication.getPrincipal();
             user.setFullName(fullName);
         }
+    }
+
+    @Override
+    public List<User> getAllUsers() {
+        return userRepository.findAll();
+    }
+
+    @Override
+    public User getUserByEmail(String email) {
+        return userRepository.findAllByEmail(email);
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        User user = userRepository.findByEmail(username);
+
+        if(user == null) {
+            throw new UsernameNotFoundException("User not found");
+        }
+
+        List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("user"));
+
+        return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(), authorities);
     }
 }

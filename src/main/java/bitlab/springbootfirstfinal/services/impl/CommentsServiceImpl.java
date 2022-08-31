@@ -9,6 +9,7 @@ import bitlab.springbootfirstfinal.models.User;
 import bitlab.springbootfirstfinal.repository.CommentsRepository;
 import bitlab.springbootfirstfinal.repository.TasksRepository;
 import bitlab.springbootfirstfinal.services.CommentsService;
+import bitlab.springbootfirstfinal.services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,7 @@ public class CommentsServiceImpl implements CommentsService {
     private final CommentsRepository commentsRepository;
     private final TasksRepository tasksRepository;
     private final CommentsMapper commentsMapper;
+    private final UserService userService;
 
     @Override
     public List<CommentsDTO> commentsByTaskId(Long taskId) {
@@ -29,13 +31,12 @@ public class CommentsServiceImpl implements CommentsService {
     }
 
     @Override
-    public CommentsDTO addComment(CommentsDTO commentDTO, Long taskId, UserDTO currentUser) {
-        Comments comment = commentsMapper.toEntity(commentDTO);
+    public Comments addComment(Comments comment, Long taskId, User currentUser) {
         Tasks task = tasksRepository.findById(taskId).orElse(null);
         if (comment != null) {
             comment.setTask(task);
             comment.setCommentAuthor(currentUser.getFullName());
-            return commentsMapper.toDto(commentsRepository.save(comment));
+            return commentsRepository.save(comment);
         }
         return null;
     }

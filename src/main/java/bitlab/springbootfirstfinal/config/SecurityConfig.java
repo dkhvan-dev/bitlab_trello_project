@@ -22,6 +22,7 @@ public class SecurityConfig {
         return new UserServiceImpl();
     }
 
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -48,7 +49,11 @@ public class SecurityConfig {
                 .logoutUrl("/signOut")
                 .logoutSuccessUrl("/auth");
 
-        http.csrf().disable();
+        http
+                .csrf().disable()
+                .authorizeRequests().anyRequest().authenticated()
+                .and().httpBasic()
+                .and().sessionManagement().disable();
 
         return http.build();
     }

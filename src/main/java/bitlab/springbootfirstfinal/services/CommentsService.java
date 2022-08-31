@@ -9,5 +9,5 @@ import java.util.List;
 
 public interface CommentsService {
     List<CommentsDTO> commentsByTaskId(Long taskId);
-    CommentsDTO addComment(CommentsDTO comment, Long taskId, UserDTO currentUser);
+    Comments addComment(Comments comment, Long taskId, User currentUser);
 }

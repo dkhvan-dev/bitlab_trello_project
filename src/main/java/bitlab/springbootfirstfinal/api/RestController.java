@@ -7,6 +7,7 @@ import bitlab.springbootfirstfinal.mapper.TasksMapper;
 import bitlab.springbootfirstfinal.mapper.UserMapper;
 import bitlab.springbootfirstfinal.models.*;
 import bitlab.springbootfirstfinal.services.*;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,6 +16,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 //@PreAuthorize("hasRole('ROLE_ADMIN')")
 @org.springframework.web.bind.annotation.RestController
@@ -53,7 +55,7 @@ public class RestController {
     }
 
     // CATEGORIES
-    @GetMapping("/categories")
+    @GetMapping("/allCategories")
     public ResponseEntity<List<TaskCategoriesDTO>> getAllCategories() {
         return new ResponseEntity<>(taskCategoriesService.allCategories(), HttpStatus.OK);
     }
@@ -69,6 +71,12 @@ public class RestController {
         return new ResponseEntity<>(taskService.task(taskId), HttpStatus.OK);
     }
 
+    @DeleteMapping(value = "/tasks/{folderId}/{taskId}")
+    public void deleteTask(@PathVariable(name = "folderId") Long folderId,
+                           @PathVariable(name = "taskId") Long taskId) {
+        taskService.deleteTask(taskId);
+    }
+
     // TASK STATUS
     @GetMapping("/taskStatus")
     public ResponseEntity<List<TaskStatusDTO>> getAllTaskStatus() {
@@ -82,8 +90,40 @@ public class RestController {
     }
 
     @PostMapping(value = "/comments/{taskId}")
-    public ResponseEntity<CommentsDTO> addComment(@RequestBody CommentsDTO comment,
-                                                  @PathVariable(name = "taskId") Long taskId) {
-        return new ResponseEntity<>(commentsService.addComment(comment, taskId, userMapper.toDto(userService.getCurrentuser())), HttpStatus.CREATED);
+//    public ResponseEntity<CommentsDTO> addComment(@RequestBody CommentsDTO commentDTO,
+//                                                  @PathVariable(name = "taskId") Long taskId) {
+//        Comments comment = commentsMapper.toEntity(comment);
+//        return new ResponseEntity<>(commentsService.addComment(commentDTO, taskId), HttpStatus.CREATED);
+//    }
+    public ResponseEntity<Comments> addComment(@RequestBody Comments comments,
+                                  @PathVariable(name = "taskId") Long taskId) {
+
+        return new ResponseEntity<>(commentsService.addComment(comments, taskId, getCurrentUser(comments.getTask().getFolder().getUser().getEmail())), HttpStatus.OK);
+//        return new ResponseEntity<>(comment.getTask().getFolder().getUser().getEmail(), HttpStatus.OK);
+
+
+//                commentsService.addComment(commentsDTO, taskId, getCurrentUser(comment.getTask().getFolder().getUser().getEmail()));
+    }
+
+    // USERS
+    @GetMapping("/allUsers")
+    public ResponseEntity<List<User>> getAllUsers() {
+        return new ResponseEntity<>(userService.getAllUsers(), HttpStatus.OK);
+    }
+
+    public User getCurrentUser(String email) {
+        for (int i = 0; i < userService.getAllUsers().size(); i++) {
+            if (userService.getAllUsers().get(i).getEmail().equals(email)) {
+                return userService.getAllUsers().get(i);
+            }
+        }
+//        User userCurrent = userService.getAllUsers()
+//                .stream()
+//                .filter(user -> email.equals(user.getEmail()))
+//                .findFirst()
+//                .get();
+//        System.out.println(userService.getAllUsers().get(0).getEmail());
+//        return userMapper.toDto(userCurrent) ;
+        return null;
     }
 }
